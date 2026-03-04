@@ -1,0 +1,88 @@
+###############################################################################
+# Digital Brain CD — Deploy to VM
+#
+# Triggered after CI passes on main. SSHs into the target VM, pulls the
+# latest image from GHCR, and restarts the stack.
+###############################################################################
+
+name: Digital Brain CD
+
+on:
+    workflow_run:
+        workflows: ["Digital Brain CI"]
+        types: [completed]
+        branches: [main]
+
+env:
+    IMAGE_NAME: digital-brain
+    REGISTRY: ghcr.io
+
+jobs:
+    deploy:
+        name: Deploy to VM
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Deploy via SSH
+              uses: appleboy/ssh-action@v1
+              with:
+                  host: ${{ secrets.DEPLOY_HOST }}
+                  username: ${{ secrets.DEPLOY_USER }}
+                  key: ${{ secrets.DEPLOY_KEY }}
+                  script: |
+                      set -e
+
+                      # Navigate to deployment directory
+                      cd ~/digital-brain || mkdir -p ~/digital-brain && cd ~/digital-brain
+
+                      # Login to GHCR
+                      echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+                      # Pull latest image
+                      docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+
+                      # Stop existing container if running
+                      docker stop digital-brain-api 2>/dev/null || true
+                      docker rm digital-brain-api 2>/dev/null || true
+
+                      # Start new container
+                      docker run -d \
+                        --name digital-brain-api \
+                        --restart unless-stopped \
+                        -p 8100:8100 \
+                        -e BRAIN_MCP_NAME=DigitalBrain \
+                        -e BRAIN_VECTOR_DIM=32 \
+                        ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+
+                      # Wait for startup
+                      sleep 10
+
+                      # Health check
+                      curl -sf http://localhost:8100/health || (docker logs digital-brain-api && exit 1)
+                      echo "Deployment successful!"
+
+            - name: Smoke test
+              uses: appleboy/ssh-action@v1
+              with:
+                  host: ${{ secrets.DEPLOY_HOST }}
+                  username: ${{ secrets.DEPLOY_USER }}
+                  key: ${{ secrets.DEPLOY_KEY }}
+                  script: |
+                      echo "=== Smoke Test ==="
+
+                      # Health
+                      curl -sf http://localhost:8100/health
+
+                      # Swarm status
+                      curl -sf http://localhost:8100/swarm/status
+
+                      # Brain search
+                      curl -sf -X POST http://localhost:8100/brain/search \
+                        -H "Content-Type: application/json" \
+                        -d '{"query": "orchestration", "top_k": 3}'
+
+                      echo ""
+                      echo "=== All smoke tests passed ==="

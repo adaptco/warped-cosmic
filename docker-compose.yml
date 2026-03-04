@@ -1,0 +1,24 @@
+###############################################################################
+# Digital Brain — Single-Service Stack
+###############################################################################
+
+services:
+  digital-brain:
+    build: .
+    container_name: digital-brain-api
+    ports:
+      - "${BRAIN_MCP_PORT:-8100}:8100"
+    environment:
+      BRAIN_VECTOR_DIM: "${BRAIN_VECTOR_DIM:-32}"
+      BRAIN_WAVE_FREQ: "${BRAIN_WAVE_FREQ:-1.0}"
+      BRAIN_WAVE_DECAY: "${BRAIN_WAVE_DECAY:-0.95}"
+      BRAIN_MAX_AGENTS: "${BRAIN_MAX_AGENTS:-8}"
+      BRAIN_MCP_NAME: "${BRAIN_MCP_NAME:-DigitalBrain}"
+      BRAIN_MCP_PORT: "8100"
+    healthcheck:
+      test: [ "CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8100/health')\" || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
