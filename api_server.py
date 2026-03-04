@@ -25,6 +25,7 @@ from middleware.wave_runtime import WaveformRuntime
 from physics_search.engine import PhysicsSearchEngine
 from schemas import AgentCapability, CommitPlan
 from server.agent_protocol import AgentProtocol
+from server.firestore_sync import FirestoreSync
 from swarm.swarm_runner import SwarmRunner
 
 
@@ -37,6 +38,7 @@ runtime: WaveformRuntime
 search_engine: PhysicsSearchEngine
 swarm_runner: SwarmRunner
 protocol: AgentProtocol
+fs_sync: FirestoreSync
 
 
 def _seed(b: DigitalBrain, s: PhysicsSearchEngine) -> None:
@@ -55,7 +57,7 @@ def _seed(b: DigitalBrain, s: PhysicsSearchEngine) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global brain, thread, runtime, search_engine, swarm_runner, protocol
+    global brain, thread, runtime, search_engine, swarm_runner, protocol, fs_sync
 
     brain = DigitalBrain()
     thread = DigitalThread()
@@ -64,6 +66,9 @@ async def lifespan(app: FastAPI):
     _seed(brain, search_engine)
 
     swarm_runner = SwarmRunner(brain, thread, runtime, search_engine)
+
+    # Firestore persistence (graceful fallback if not configured)
+    fs_sync = FirestoreSync(project_id="moe-router-98693480")
 
     protocol = AgentProtocol()
     protocol.handshake(
@@ -152,6 +157,8 @@ async def health():
         "brain_entries": brain.entry_count,
         "search_index": search_engine.index_size,
         "swarm_state": swarm_runner.state.value,
+        "firestore": "connected" if fs_sync.enabled else "memory-only",
+        "firebase_project": "moe-router-98693480",
     }
 
 
@@ -175,6 +182,11 @@ async def brain_file(req: BrainFileRequest):
 
     entry = brain.file_knowledge(repo.repo_id, req.content, source="api")
     search_engine.index_entry(entry)
+
+    # Persist to Firestore
+    fs_sync.save_repo(repo.model_dump())
+    fs_sync.save_entry(repo.repo_id, entry.model_dump())
+
     return {"repo_id": repo.repo_id, "entry_id": entry.entry_id}
 
 
@@ -220,6 +232,24 @@ async def agent_send(req: AgentSendRequest):
     """Send a message between two agents in the MCP network."""
     result = protocol.send(req.sender, req.receiver, req.action, req.payload)
     return result
+
+
+@app.post("/firestore/sync")
+async def firestore_sync():
+    """Sync the entire in-memory brain to Firestore."""
+    counts = fs_sync.sync_brain_to_firestore(brain)
+    return {"status": "synced", "counts": counts, "firestore_enabled": fs_sync.enabled}
+
+
+@app.get("/firestore/status")
+async def firestore_status():
+    """Check Firestore connection status."""
+    return {
+        "enabled": fs_sync.enabled,
+        "project": "moe-router-98693480",
+        "brain_repos": brain.repo_count,
+        "brain_entries": brain.entry_count,
+    }
 
 
 # ---------------------------------------------------------------------------

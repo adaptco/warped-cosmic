@@ -1,0 +1,45 @@
+// Digital Brain — Firestore Security Rules
+// Authenticated users get read/write access with a 30-day expiry.
+// Replace with production rules before launch.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Knowledge repositories
+    match /repos/{repoId} {
+      allow read, write: if request.auth != null
+                         && request.time < timestamp.date(2026, 4, 3);
+
+      // Knowledge entries within a repo
+      match /entries/{entryId} {
+        allow read, write: if request.auth != null
+                           && request.time < timestamp.date(2026, 4, 3);
+      }
+    }
+
+    // Digital thread nodes
+    match /threads/{threadId} {
+      allow read, write: if request.auth != null
+                         && request.time < timestamp.date(2026, 4, 3);
+    }
+
+    // Swarm tasks and commit plans
+    match /swarm/{docId} {
+      allow read, write: if request.auth != null
+                         && request.time < timestamp.date(2026, 4, 3);
+    }
+
+    // Agent registry
+    match /agents/{agentId} {
+      allow read, write: if request.auth != null
+                         && request.time < timestamp.date(2026, 4, 3);
+    }
+
+    // Agent messages
+    match /messages/{messageId} {
+      allow read, write: if request.auth != null
+                         && request.time < timestamp.date(2026, 4, 3);
+    }
+  }
+}

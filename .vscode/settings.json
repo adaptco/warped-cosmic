@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "digital_brain"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
