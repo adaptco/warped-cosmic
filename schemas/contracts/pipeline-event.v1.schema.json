@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "AxQxOS/PipelineEvent/v1",
+  "title": "PipelineEvent",
+  "type": "object",
+  "required": ["event", "status", "sha", "capsule", "canonical"],
+  "properties": {
+    "event": {"type": "string", "const": "pipeline.complete"},
+    "status": {"type": "string"},
+    "sha": {"type": "string"},
+    "capsule": {"type": "string"},
+    "canonical": {"type": "string"},
+    "signature": {"type": ["string", "null"]},
+    "timestamp": {"type": ["string", "null"], "format": "date-time"}
+  },
+  "additionalProperties": true
+}

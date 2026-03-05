@@ -1,0 +1,30 @@
+# AxQxOS Avatar Engine — Python Requirements
+# pip install -r requirements.txt --break-system-packages
+
+# Gemini MLOps
+google-generativeai>=0.7.0
+
+# Agent runtime
+websockets>=12.0
+asyncio-throttle>=1.0.2
+
+# Data serialization
+pyyaml>=6.0
+markdown>=3.5
+
+# Sandbox & testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Type checking
+mypy>=1.6.0
+types-PyYAML>=6.0
+
+# Linting
+ruff>=0.1.0
+
+# Web / webhook
+httpx>=0.25.0
+fastapi>=0.104.0
+uvicorn>=0.24.0

@@ -1,0 +1,51 @@
+{
+  "mcpServers": {
+    "agent-forge-tools": {
+      "url": "http://localhost:3100/mcp",
+      "description": "Local MCP server routing browser, scaffold, and PM tools"
+    },
+    "notion": {
+      "url": "https://mcp.notion.com/mcp",
+      "auth_env": "NOTION_API_KEY",
+      "tools": ["notion-create-pages", "notion-update-page", "notion-search"]
+    },
+    "slack": {
+      "url": "https://mcp.slack.com/mcp",
+      "auth_env": "SLACK_BOT_TOKEN",
+      "tools": ["slack_send_message", "slack_read_channel", "slack_search_public"]
+    },
+    "zapier": {
+      "url": "https://mcp.zapier.com/api/mcp/a/23993723/mcp",
+      "auth_env": "ZAPIER_API_KEY",
+      "tools": ["zapier_tables_create_record", "google_calendar_create_detailed_event",
+                "clickup_create_task", "airtable_create_record"]
+    },
+    "linear": {
+      "url": "https://mcp.linear.app/mcp",
+      "auth_env": "LINEAR_API_KEY",
+      "tools": ["save_issue", "create_document", "list_projects"]
+    },
+    "figma": {
+      "url": "https://mcp.figma.com/mcp",
+      "auth_env": "FIGMA_API_KEY",
+      "tools": ["get_design_context", "generate_diagram", "export-design"]
+    }
+  },
+  "localTools": [
+    {
+      "name": "browser_execute",
+      "description": "Execute a Playwright browser script on the local VM",
+      "input_schema": { "script": "string", "url": "string", "headless": "boolean" }
+    },
+    {
+      "name": "scaffold_generate",
+      "description": "Generate project scaffold from spec using Claude",
+      "input_schema": { "description": "string", "stack": "object" }
+    },
+    {
+      "name": "wasm_compile",
+      "description": "Compile Rust to WASM and output to wasm/ directory",
+      "input_schema": { "crate_path": "string", "features": "array" }
+    }
+  ]
+}

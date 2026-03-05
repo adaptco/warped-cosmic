@@ -1,0 +1,204 @@
+name: Agent Forge — Full Orchestration Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      task_prompt:
+        description: "Natural language task for browser agent"
+        required: false
+        default: "Navigate to target URL and extract structured data"
+      skip_browser:
+        description: "Skip browser execution (true/false)"
+        required: false
+        default: "false"
+
+env:
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.12"
+
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+
+  # T-001 + T-002: Browser Agent + MCP Dispatch
+  browser-and-mcp:
+    name: "🌐 T-001/002 · Browser Agent + MCP"
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.skip_browser != 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+      - run: pip install anthropic playwright && playwright install chromium --with-deps
+      - name: Execute Browser Agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TASK_PROMPT: ${{ github.event.inputs.task_prompt }}
+        run: |
+          mkdir -p artifacts
+          echo '{"id":"gh-${{ github.run_id }}","action":"${{ github.event.inputs.task_prompt }}"}' > task_spec.json
+          python agents/browser/agent.py
+      - uses: actions/upload-artifact@v4
+        with: { name: browser-results, path: artifacts/ }
+
+  # T-003: LLM Agent Handoff (MoE)
+  llm-handoff:
+    name: "◈ T-003 · LLM MoE Handoff"
+    needs: browser-and-mcp
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+      - run: pip install anthropic
+      - uses: actions/download-artifact@v4
+        with: { name: browser-results, path: artifacts/ }
+      - name: Select MoE Agents from Airtable
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+        run: python airtable/moe_selector.py
+      - name: Claude Orchestrator Handoff
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY:    ${{ secrets.GEMINI_API_KEY }}
+        run: python agents/orchestrator/agent.py
+      - uses: actions/upload-artifact@v4
+        with: { name: agent-response, path: artifacts/ }
+
+  # T-004: Webhook Notifications (Slack + Discord)
+  notify:
+    name: "📡 T-004 · Slack + Discord Notify"
+    needs: llm-handoff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+      - run: pip install anthropic
+      - uses: actions/download-artifact@v4
+        with: { name: agent-response, path: artifacts/ }
+      - name: Send Notifications
+        env:
+          ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_WEBHOOK_URL:    ${{ secrets.SLACK_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL:  ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python agents/notifier/agent.py
+
+  # T-005: Notion + ClickUp Task Creation
+  create-pm-tasks:
+    name: "📋 T-005 · Notion + ClickUp Tasks"
+    needs: notify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+      - run: pip install anthropic requests
+      - uses: actions/download-artifact@v4
+        with: { name: agent-response, path: artifacts/ }
+      - name: Create PM Tasks
+        env:
+          ANTHROPIC_API_KEY:   ${{ secrets.ANTHROPIC_API_KEY }}
+          NOTION_API_KEY:      ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID:  ${{ secrets.NOTION_DATABASE_ID }}
+          CLICKUP_API_KEY:     ${{ secrets.CLICKUP_API_KEY }}
+          CLICKUP_LIST_ID:     ${{ secrets.CLICKUP_LIST_ID }}
+        run: python agents/pm/agent.py
+
+  # T-007: Claude Scaffold Generation
+  scaffold:
+    name: "⬡ T-007 · Scaffold Generation"
+    needs: create-pm-tasks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+      - run: pip install anthropic pyyaml
+      - uses: actions/download-artifact@v4
+        with: { name: agent-response, path: artifacts/ }
+      - name: Generate Scaffold
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python agents/orchestrator/scaffold.py
+      - uses: actions/upload-artifact@v4
+        with: { name: scaffold, path: scaffold/ }
+
+  # T-009: Gemini UI Generation + Firebase Studio
+  gemini-ui:
+    name: "🔷 T-009 · Gemini UI + Firebase Studio"
+    needs: scaffold
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+      - run: pip install google-generativeai firebase-admin
+      - uses: actions/download-artifact@v4
+        with: { name: scaffold, path: scaffold/ }
+      - name: Generate UI with Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: python agents/gemini-ui/agent.py
+      - uses: actions/upload-artifact@v4
+        with: { name: ui-components, path: ui/ }
+
+  # T-010: Vertex AI UX + WASM Compile
+  vertex-wasm:
+    name: "🧠 T-010 · Vertex AI + WASM"
+    needs: gemini-ui
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+      - uses: actions-rs/toolchain@v1
+        with: { toolchain: stable, target: wasm32-unknown-unknown }
+      - run: pip install google-cloud-aiplatform
+      - uses: actions/download-artifact@v4
+        with: { name: ui-components, path: ui/ }
+      - name: Vertex AI UX Generation
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
+          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+        run: python agents/vertex/agent.py
+      - name: Compile WASM
+        run: |
+          cargo build --target wasm32-unknown-unknown --release
+          wasm-bindgen target/wasm32-unknown-unknown/release/agent_forge.wasm --out-dir wasm/
+      - uses: actions/upload-artifact@v4
+        with: { name: wasm-build, path: wasm/ }
+
+  # T-011: Firebase Deploy
+  firebase-deploy:
+    name: "🔥 T-011 · Firebase Deploy"
+    needs: vertex-wasm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/download-artifact@v4
+        with: { name: ui-components, path: firebase/hosting/ }
+      - uses: actions/download-artifact@v4
+        with: { name: wasm-build, path: firebase/hosting/wasm/ }
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+          channelId: live
+      - name: Post-deploy Slack Notify
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -s -X POST $SLACK_WEBHOOK_URL \
+            -H "Content-Type: application/json" \
+            -d '{"text":"🚀 *Agent Forge deployed!* Firebase + WASM live at https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app"}'

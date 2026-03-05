@@ -173,3 +173,160 @@
 [debug] [2026-03-04T02:06:45.773Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
 [debug] [2026-03-04T02:06:45.780Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
 [debug] [2026-03-04T02:06:46.057Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T03:01:46.320Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T03:01:46.335Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T03:01:46.715Z] Running auto auth
+[debug] [2026-03-04T03:01:46.716Z] Running auto auth
+[debug] [2026-03-04T03:01:46.717Z] No OAuth tokens found
+[debug] [2026-03-04T03:01:46.719Z] No OAuth tokens found
+[debug] [2026-03-04T03:01:46.721Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T03:01:46.725Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T03:01:47.074Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T03:56:36.404Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T03:56:36.409Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T03:56:36.699Z] Running auto auth
+[debug] [2026-03-04T03:56:36.700Z] Running auto auth
+[debug] [2026-03-04T03:56:36.702Z] No OAuth tokens found
+[debug] [2026-03-04T03:56:36.703Z] No OAuth tokens found
+[debug] [2026-03-04T03:56:36.705Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T03:56:36.708Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T03:56:37.003Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T03:56:37.003Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo {"error":{"code":403,"message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"cloudbilling.googleapis.com","serviceTitle":"Cloud Billing API","consumer":"projects/681255809395","activationUrl":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395","containerInfo":"681255809395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}]}]}}
+[debug] [2026-03-04T04:51:34.297Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T04:51:34.303Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T04:51:34.602Z] Running auto auth
+[debug] [2026-03-04T04:51:34.602Z] Running auto auth
+[debug] [2026-03-04T04:51:34.603Z] No OAuth tokens found
+[debug] [2026-03-04T04:51:34.604Z] No OAuth tokens found
+[debug] [2026-03-04T04:51:34.606Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T04:51:34.608Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T04:51:34.825Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T04:51:34.826Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo {"error":{"code":403,"message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"cloudbilling.googleapis.com","serviceTitle":"Cloud Billing API","activationUrl":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395","containerInfo":"681255809395","consumer":"projects/681255809395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}]}]}}
+[debug] [2026-03-04T04:51:34.935Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T05:46:32.514Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T05:46:32.521Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T05:46:32.858Z] Running auto auth
+[debug] [2026-03-04T05:46:32.859Z] Running auto auth
+[debug] [2026-03-04T05:46:32.861Z] No OAuth tokens found
+[debug] [2026-03-04T05:46:32.863Z] No OAuth tokens found
+[debug] [2026-03-04T05:46:32.865Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T05:46:32.868Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T05:46:33.075Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T05:46:33.076Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo {"error":{"code":403,"message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395","consumer":"projects/681255809395","containerInfo":"681255809395","service":"cloudbilling.googleapis.com","serviceTitle":"Cloud Billing API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}]}]}}
+[debug] [2026-03-04T05:46:33.163Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T06:41:33.678Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T06:41:33.688Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T06:41:34.299Z] Running auto auth
+[debug] [2026-03-04T06:41:34.300Z] Running auto auth
+[debug] [2026-03-04T06:41:34.302Z] No OAuth tokens found
+[debug] [2026-03-04T06:41:34.303Z] No OAuth tokens found
+[debug] [2026-03-04T06:41:34.305Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T06:41:34.308Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T06:41:34.937Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T07:36:32.926Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T07:36:32.934Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T07:36:33.266Z] Running auto auth
+[debug] [2026-03-04T07:36:33.267Z] Running auto auth
+[debug] [2026-03-04T07:36:33.268Z] No OAuth tokens found
+[debug] [2026-03-04T07:36:33.269Z] No OAuth tokens found
+[debug] [2026-03-04T07:36:33.271Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T07:36:33.274Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T07:36:33.534Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T08:31:33.337Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T08:31:33.343Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T08:31:33.673Z] Running auto auth
+[debug] [2026-03-04T08:31:33.674Z] Running auto auth
+[debug] [2026-03-04T08:31:33.675Z] No OAuth tokens found
+[debug] [2026-03-04T08:31:33.676Z] No OAuth tokens found
+[debug] [2026-03-04T08:31:33.678Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T08:31:33.682Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T08:31:33.958Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T09:26:37.356Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T09:26:37.364Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T09:26:37.675Z] Running auto auth
+[debug] [2026-03-04T09:26:37.676Z] Running auto auth
+[debug] [2026-03-04T09:26:37.678Z] No OAuth tokens found
+[debug] [2026-03-04T09:26:37.679Z] No OAuth tokens found
+[debug] [2026-03-04T09:26:37.681Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T09:26:37.684Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T09:26:37.980Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T10:21:33.396Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T10:21:33.403Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T10:21:33.762Z] Running auto auth
+[debug] [2026-03-04T10:21:33.763Z] Running auto auth
+[debug] [2026-03-04T10:21:33.764Z] No OAuth tokens found
+[debug] [2026-03-04T10:21:33.765Z] No OAuth tokens found
+[debug] [2026-03-04T10:21:33.767Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T10:21:33.770Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T10:21:34.108Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T11:11:10.367Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T11:11:10.375Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T11:11:10.764Z] Running auto auth
+[debug] [2026-03-04T11:11:10.765Z] Running auto auth
+[debug] [2026-03-04T11:11:10.767Z] No OAuth tokens found
+[debug] [2026-03-04T11:11:10.768Z] No OAuth tokens found
+[debug] [2026-03-04T11:11:10.770Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T11:11:10.773Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T11:11:11.116Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T12:04:35.183Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T12:04:35.208Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-04T12:04:35.513Z] Running auto auth
+[debug] [2026-03-04T12:04:35.515Z] Running auto auth
+[debug] [2026-03-04T12:04:35.517Z] No OAuth tokens found
+[debug] [2026-03-04T12:04:35.518Z] No OAuth tokens found
+[debug] [2026-03-04T12:04:35.520Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T12:04:35.524Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-04T12:04:35.732Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-04T12:04:35.732Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo {"error":{"code":403,"message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"serviceTitle":"Cloud Billing API","activationUrl":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395","service":"cloudbilling.googleapis.com","containerInfo":"681255809395","consumer":"projects/681255809395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}]}]}}
+[debug] [2026-03-04T12:04:35.836Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-05T00:25:58.966Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T00:25:58.974Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T00:25:59.255Z] Running auto auth
+[debug] [2026-03-05T00:25:59.256Z] Running auto auth
+[debug] [2026-03-05T00:25:59.258Z] No OAuth tokens found
+[debug] [2026-03-05T00:25:59.259Z] No OAuth tokens found
+[debug] [2026-03-05T00:25:59.260Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T00:25:59.264Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T00:25:59.543Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-05T00:25:59.543Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo {"error":{"code":403,"message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395","service":"cloudbilling.googleapis.com","serviceTitle":"Cloud Billing API","containerInfo":"681255809395","consumer":"projects/681255809395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}]}]}}
+[debug] [2026-03-05T01:12:53.936Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T01:12:53.946Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T01:12:54.227Z] Running auto auth
+[debug] [2026-03-05T01:12:54.228Z] Running auto auth
+[debug] [2026-03-05T01:12:54.231Z] No OAuth tokens found
+[debug] [2026-03-05T01:12:54.232Z] No OAuth tokens found
+[debug] [2026-03-05T01:12:54.234Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T01:12:54.237Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T01:12:54.542Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-05T01:12:54.542Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo {"error":{"code":403,"message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"consumer":"projects/681255809395","serviceTitle":"Cloud Billing API","containerInfo":"681255809395","service":"cloudbilling.googleapis.com","activationUrl":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}]}]}}
+[debug] [2026-03-05T01:12:54.646Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-05T02:07:42.287Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T02:07:42.295Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T02:07:42.554Z] Running auto auth
+[debug] [2026-03-05T02:07:42.556Z] Running auto auth
+[debug] [2026-03-05T02:07:42.558Z] No OAuth tokens found
+[debug] [2026-03-05T02:07:42.559Z] No OAuth tokens found
+[debug] [2026-03-05T02:07:42.561Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T02:07:42.564Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T02:07:42.857Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-05T02:34:48.379Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T02:34:48.443Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T02:34:50.417Z] Running auto auth
+[debug] [2026-03-05T02:34:50.418Z] Running auto auth
+[debug] [2026-03-05T02:34:50.419Z] No OAuth tokens found
+[debug] [2026-03-05T02:34:50.421Z] No OAuth tokens found
+[debug] [2026-03-05T02:34:50.424Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T02:34:50.428Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T02:34:50.753Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-05T02:34:50.758Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo {"error":{"code":403,"message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"cloudbilling.googleapis.com","consumer":"projects/681255809395","containerInfo":"681255809395","serviceTitle":"Cloud Billing API","activationUrl":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}]}]}}
+[debug] [2026-03-05T03:02:38.035Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T03:02:38.042Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-05T03:02:38.293Z] Running auto auth
+[debug] [2026-03-05T03:02:38.294Z] Running auto auth
+[debug] [2026-03-05T03:02:38.295Z] No OAuth tokens found
+[debug] [2026-03-05T03:02:38.296Z] No OAuth tokens found
+[debug] [2026-03-05T03:02:38.297Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T03:02:38.300Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo [none]
+[debug] [2026-03-05T03:02:38.658Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403
+[debug] [2026-03-05T03:02:38.659Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo {"error":{"code":403,"message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395","consumer":"projects/681255809395","service":"cloudbilling.googleapis.com","serviceTitle":"Cloud Billing API","containerInfo":"681255809395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Billing API has not been used in project 681255809395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=681255809395"}]}]}}
+[debug] [2026-03-05T03:02:38.660Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/moe-router-98693480/billingInfo 403

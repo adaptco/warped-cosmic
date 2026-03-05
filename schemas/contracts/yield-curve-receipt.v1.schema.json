@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "AxQxOS/YieldCurveReceipt/v1",
+  "type": "object",
+  "required": ["schema", "run_id", "gamma_yield"],
+  "properties": {
+    "schema": {"const": "AxQxOS/YieldCurveReceipt/v1"},
+    "run_id": {"type": "string"},
+    "gamma_yield": {"type": "number"},
+    "canonical_hash": {"type": "string"}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "prompt": "Generate an avatar movement module for Sol.F1",
+    "completion": "def move_avatar(state):\n    return {'status': 'ok', 'state': state}",
+    "reward": 0.92
+  },
+  {
+    "prompt": "Generate deterministic task dispatcher",
+    "completion": "def dispatch(task):\n    return {'task': task, 'dispatched': True}",
+    "reward": 0.88
+  }
+]

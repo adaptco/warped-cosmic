@@ -1,0 +1,121 @@
+{
+  "schema_version": "1",
+  "root": "C:\\Users\\eqhsp\\Documents\\GitHub",
+  "ignored_dirs": [
+    ".git",
+    ".hg",
+    ".idea",
+    ".mypy_cache",
+    ".next",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".svn",
+    ".turbo",
+    ".venv",
+    ".vscode",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+    "venv"
+  ],
+  "repos": [
+    {
+      "name": ".github",
+      "path": "C:\\Users\\eqhsp\\Documents\\GitHub\\.github",
+      "is_git_repo": true,
+      "default_branch": "main",
+      "languages": [
+        {
+          "language": "javascript",
+          "count": 7
+        },
+        {
+          "language": "yaml",
+          "count": 3
+        }
+      ],
+      "recommended_test_commands": [],
+      "recommended_build_commands": [],
+      "risk_profile": "high"
+    },
+    {
+      "name": "A2A_MCP",
+      "path": "C:\\Users\\eqhsp\\Documents\\GitHub\\A2A_MCP",
+      "is_git_repo": true,
+      "default_branch": "main",
+      "languages": [
+        {
+          "language": "yaml",
+          "count": 69
+        },
+        {
+          "language": "python",
+          "count": 28
+        },
+        {
+          "language": "shell",
+          "count": 8
+        },
+        {
+          "language": "javascript",
+          "count": 1
+        },
+        {
+          "language": "toml",
+          "count": 1
+        }
+      ],
+      "recommended_test_commands": [
+        "python -m pytest -q",
+        "npm test"
+      ],
+      "recommended_build_commands": [
+        "python -m build",
+        "npm run build",
+        "docker build -t repo-image .",
+        "docker compose config"
+      ],
+      "risk_profile": "high"
+    },
+    {
+      "name": "core-orchestrator",
+      "path": "C:\\Users\\eqhsp\\Documents\\GitHub\\core-orchestrator",
+      "is_git_repo": true,
+      "default_branch": "main",
+      "languages": [
+        {
+          "language": "python",
+          "count": 169
+        },
+        {
+          "language": "javascript",
+          "count": 82
+        },
+        {
+          "language": "yaml",
+          "count": 59
+        },
+        {
+          "language": "shell",
+          "count": 45
+        },
+        {
+          "language": "typescript",
+          "count": 41
+        }
+      ],
+      "recommended_test_commands": [
+        "python -m pytest -q",
+        "npm test"
+      ],
+      "recommended_build_commands": [
+        "python -m build",
+        "npm run build",
+        "docker build -t repo-image .",
+        "docker compose config"
+      ],
+      "risk_profile": "high"
+    }
+  ]
+}

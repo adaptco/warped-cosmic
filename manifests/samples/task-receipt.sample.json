@@ -1,0 +1,15 @@
+{
+  "schema": "AxQxOS/TaskReceipt/v1",
+  "taskId": "sample-task-1",
+  "requestingAgent": "WEBHOOK",
+  "targetRole": "AVATAR_CODEGEN",
+  "format": "json",
+  "payload": {"spec": "sample"},
+  "webhookUrl": null,
+  "status": "PENDING",
+  "createdAt": "2026-03-05T00:00:00Z",
+  "completedAt": null,
+  "result": null,
+  "assignedTo": null,
+  "signature": null
+}

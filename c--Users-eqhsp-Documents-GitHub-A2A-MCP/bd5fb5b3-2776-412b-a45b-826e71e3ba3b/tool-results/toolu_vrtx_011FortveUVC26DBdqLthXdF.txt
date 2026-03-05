@@ -1,0 +1,636 @@
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-14-    """Test Three.js scene management."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:15:    print("\n=== Test 1: Scene Manager ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-16-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-21-    assert len(scene.cameras) == 1
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:22:    print("[OK] Scene manager created")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-23-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-33-    assert len(scene.objects) == 1
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:34:    print("[OK] Object added to scene")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-35-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-40-    assert updated.position.x == 50
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:41:    print("[OK] Object position updated")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-42-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-46-    assert "objects" in json_str
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:47:    print("[OK] Scene exported to JSON")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-48-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-51-    """Test Base44 world rendering."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:52:    print("\n=== Test 2: World Renderer ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-53-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-55-    assert len(renderer.zone_renderers) == 44
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:56:    print("[OK] World renderer created with 44 zones")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-57-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-60-    assert zone_id is not None
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:61:    print(f"[OK] Zone at (50, 50, 0): {zone_id}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-62-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-65-    assert 25 <= speed <= 70
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:66:    print(f"[OK] Speed limit at zone: {speed} mph")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-67-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-70-    assert scene_dict["object_count"] == 44
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:71:    print(f"[OK] World scene exported with {scene_dict['object_count']} zones")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-72-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-75-    """Test avatar rendering."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:76:    print("\n=== Test 3: Avatar Renderer ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-77-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-79-    assert len(renderer.avatar_panels) == 7
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:80:    print("[OK] Avatar renderer created with 7 panels")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-81-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-87-    assert panel.judge_score == 0.85
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:88:    print(f"[OK] Avatar score updated to 0.85")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-89-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-92-    assert ui_json["count"] == 7
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:93:    print("[OK] Avatar UI panels exported to JSON")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-94-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-98-    assert avatar_obj.id.startswith("avatar_")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:99:    print("[OK] Avatar 3D representation created")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-100-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-103-    """Test game engine integration."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:104:    print("\n=== Test 4: Game Engine ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-105-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-108-    assert len(engine.player_states) == 0
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:109:    print("[OK] Game engine initialized")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-110-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-116-    assert state.fuel_gal == 13.2
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:117:    print("[OK] Player initialized")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-118-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-124-    assert state.fuel_gal == 12.0
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:125:    print("[OK] Player state updated")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-126-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-130-    assert 0.0 <= result["score"] <= 1.0
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:131:    print(f"[OK] Action judged with score {result['score']:.3f}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-132-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-137-    assert "TestAgent" in game_state["players"]
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:138:    print("[OK] Game state exported")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-139-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-142-    assert frame_state["frame"] == 1
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:143:    print("[OK] Frame executed")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-144-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-147-    """Test full system integration."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:148:    print("\n=== Test 5: Full Integration ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-149-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-158-    assert len(engine.player_states) == 3
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:159:    print("[OK] Multiple agents initialized")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-160-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-169-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:170:    print("[OK] All agents judged")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-171-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-176-    assert engine.frame_count == 10
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:177:    print("[OK] Frame loop executed")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-178-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-183-    assert len(state["avatar_ui"]["panels"]) == 7
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:184:    print("[OK] Full game state verified")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-185-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-188-    """Test all modules compile."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:189:    print("\n=== Test 6: Module Compilation ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-190-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-205-        except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:206:            print(f"[FAIL] {module}: {e}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-207-            sys.exit(1)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-208-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:209:    print(f"[OK] All {len(modules)} modules compile")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-210-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-212-if __name__ == "__main__":
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:213:    print("=" * 70)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:214:    print("Three.js WebGL Frontend Integration Tests (Part D)")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:215:    print("=" * 70)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-216-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py-223-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:224:    print("\n" + "=" * 70)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:225:    print("ALL TESTS PASSED - Part D Complete")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_webgl_integration.py:226:    print("=" * 70)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_storage.py-32-    assert retrieved.content["status"] == "verified"
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_storage.py:33:    print(f"✓ Persistence Lifecycle Verified for ID: {test_id}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_storage.py-34-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-70-        assert current.state == AgentLifecycleState.CONVERGED
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py:71:        print(f"✓ Happy path: {len(trail)} artifacts in chain")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-72-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-93-        assert art.state == AgentLifecycleState.CONVERGED
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py:94:        print("✓ Healing retry loop converged")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-95-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-104-        assert art.state == AgentLifecycleState.INIT
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py:105:        print("✓ Failure rollback to INIT")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-106-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-117-            art.transition(AgentLifecycleState.INIT)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py:118:        print("✓ CONVERGED is terminal")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-119-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-137-        assert hash1 == hash2
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py:138:        print(f"✓ Deterministic hash: {hash1[:16]}...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-139-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-153-        assert new.parent_artifact_id == original_id
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py:154:        print("✓ Immutability preserved")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-155-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-168-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py:169:        print(f"✓ Parent chain intact: {len(chain)} links")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-170-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-183-        assert art.lora_config.training_samples == 50
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py:184:        print("✓ LoRA config attached")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-185-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-192-        assert art.lora_config.rank == 8
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py:193:        print("✓ LoRA config survives transition")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_state_space.py-194-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-113-        assert vector_store.count("docling_chunks") == 5
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py:114:        print("✓ Injected 5 documents")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-115-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-142-        # Top result should be the MCP document (closest semantically)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py:143:        print(f"✓ Top result: {results[0]['payload']['text'][:50]}...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py:144:        print(f"  Score: {results[0]['score']:.4f}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-145-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-157-        assert [r["score"] for r in results_1] == [r["score"] for r in results_2]
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py:158:        print("✓ Deterministic retrieval verified")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-159-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-194-        assert artifact.state == AgentLifecycleState.RAG_QUERY
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py:195:        print(f"✓ RAG query at state {artifact.state.value}: {len(results)} results")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-196-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-229-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py:230:        print(f"✓ Hash chain intact: {len(ledger)} entries")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_rag_pipeline.py-231-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-72-        assert len(data) == 3  # 2 recovery + 1 code_solution
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py:73:        print(f"✓ Synthesized {len(data)} training pairs")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-74-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-84-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py:85:        print("✓ All pairs have correct format")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-86-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-96-        assert data == []
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py:97:        print("✓ Empty/unmatched nodes handled")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-98-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-104-        assert data_1 == data_2
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py:105:        print("✓ Deterministic synthesis verified")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-106-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-116-        assert "q_proj" in config.target_modules
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py:117:        print("✓ Default LoRA config valid")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-118-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-123-        assert config.training_samples == 100
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py:124:        print("✓ Custom LoRA config valid")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-125-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-151-        assert artifact.lora_config.training_samples == 3
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py:152:        print(f"✓ LORA_ADAPT with {artifact.lora_config.training_samples} training samples")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-153-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-176-        assert artifact.lora_config is not None
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py:177:        print("✓ Full lifecycle with LoRA converged")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_lora_harness.py-178-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_healing_loop.py-35-    assert hub.tester.validate.call_count == 2
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_healing_loop.py:36:    print(f"✓ Self-healing loop converged on artifact: {final_result.artifact_id}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_healing_loop.py-37-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py-26-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py:27:    print(f"🚀 Testing Codestral FIM at: {endpoint}...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py-28-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py-35-        generated_code = result['choices'][0]['message']['content']
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py:36:        print("\n✅ FIM Handshake Successful!")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py:37:        print(f"Synthesized Code Loop: \n{generated_code}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py-38-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py-39-    except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py:40:        print(f"\n❌ FIM Test Failed: {e}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_fim.py-41-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-127-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py:128:        print("✓ Full CI/CD pipeline converged")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py:129:        print(f"  Artifacts in chain: {report['artifact_count']}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-130-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-142-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py:143:        print(f"✓ All {len(report['log'])} stages traceable")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-144-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-155-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py:156:        print(f"✓ Chain integrity verified: {len(chain)} links")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-157-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-164-        assert result.lora_config.training_samples == 50
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py:165:        print("✓ LoRA config persisted through pipeline")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-166-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-182-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py:183:        print(f"✓ Deterministic replay: {states_1}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-184-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-192-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py:193:        print(f"✓ Weights hash preserved: {original_hash[:20]}...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-194-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-207-        assert report["final_state"] == "CONVERGED"
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py:208:        print("✓ Execution report format valid")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-209-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-227-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py:228:        print("✓ Pipeline correctly rejects invalid initial state")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_cicd_pipeline.py-229-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-14-    """Test avatar creation and personality profiles."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:15:    print("\n=== Test 1: Avatar Profiles ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-16-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-25-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:26:    print(f"Avatar: {avatar}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:27:    print(f"System Context:\n{avatar.get_system_context()[:100]}...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:28:    print(f"Voice Params: {avatar.get_voice_params()}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:29:    print(f"UI Params: {avatar.get_ui_params()}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-30-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-32-    assert "Engineer" in avatar.get_system_context()
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:33:    print("[OK] Avatar profiles work")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-34-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-37-    """Test avatar registry and agent bindings."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:38:    print("\n=== Test 2: Avatar Registry ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-39-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-69-    assert len(bindings) == 2
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:70:    print(f"Bindings: {bindings}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:71:    print("[OK] Avatar registry works")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-72-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-75-    """Test default avatar setup and canonical agent bindings."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:76:    print("\n=== Test 3: Default Avatars Setup ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-77-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-86-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:87:    print(f"Registered {len(avatars)} avatars")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:88:    print(f"Bindings: {len(bindings)}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-89-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-102-        assert avatar is not None, f"Missing avatar for {agent_name}"
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:103:        print(f"  {agent_name:20} -> {avatar.profile.name:12} ({avatar.profile.style.value})")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-104-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:105:    print("[OK] Default avatars setup works")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-106-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-109-    """Test Judge integration with avatars."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:110:    print("\n=== Test 4: Judge with Avatars ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-111-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-116-    criteria = judge._criteria
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:117:    print(f"Judge loaded {len(criteria)} criteria:")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-118-    for crit_type, criterion in criteria.items():
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:119:        print(f"  {crit_type.value:15} weight={criterion.weight:.1f}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-120-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-137-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:138:    print(f"\nAction scores:")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-139-    for score in scores:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:140:        print(f"  {score.action:30} -> {score.overall_score:.3f}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-141-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-142-    assert len(scores) == 3
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:143:    print("[OK] Judge with avatars works")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-144-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-147-    """Test full JudgeOrchestrator integration."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:148:    print("\n=== Test 5: JudgeOrchestrator Integration ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-149-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-153-    avatars = orchestrator.list_avatars()
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:154:    print(f"JudgeOrchestrator initialized with {len(avatars)} avatars")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-155-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-157-    coder_avatar = orchestrator.get_avatar_for_agent("CoderAgent")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:158:    print(f"CoderAgent avatar: {coder_avatar.profile.name}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-159-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-161-    system_context = orchestrator.get_agent_system_context("CoderAgent")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:162:    print(f"CoderAgent system context: {system_context[:80]}...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-163-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-172-    score = orchestrator.judge_action("implement feature with tests", context, "CoderAgent")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:173:    print(f"Action score: {score.overall_score:.3f}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-174-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:175:    print("[OK] JudgeOrchestrator integration works")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-176-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-179-    """Test avatar responding with system context."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:180:    print("\n=== Test 6: Avatar Response with Context ===")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-181-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-202-    response = asyncio.run(avatar.respond("Write a login function", context))
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:203:    print(f"Avatar response: {response[:100]}...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-204-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:205:    print("[OK] Avatar response with context works")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-206-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-208-if __name__ == "__main__":
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:209:    print("=" * 60)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:210:    print("Testing Avatar-Agent Binding (Part E)")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:211:    print("=" * 60)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-212-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py-219-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:220:    print("\n" + "=" * 60)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:221:    print("[OK] All Part E integration tests passed!")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_avatar_integration.py:222:    print("=" * 60)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_api.py-4-async def main():
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_api.py:5:    print("🚀 Initiating A2A-MCP Self-Healing Test...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_api.py-6-    hub = MCPHub()
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_api.py-15-    if final_artifact:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_api.py:16:        print(f"\n✅ Success! Final Verified Artifact ID: {final_artifact.artifact_id}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_api.py:17:        print(f"Agent Trace: {final_artifact.agent_name} (v{final_artifact.version})")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_api.py-18-    else:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_api.py:19:        print("\n❌ System failed to converge within retry limits.")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\tests\test_api.py-20-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py-13-        if df.empty:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py:14:            print("📭 No artifacts found in the database yet.")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py-15-        else:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py:16:            print(f"📂 Found {len(df)} artifacts:")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py:17:            print(df[['id', 'type', 'agent_name', 'created_at']].to_string(index=False))
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py-18-            
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py-19-            # Show the most recent content
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py:20:            print("
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py-21-📝 Most Recent Artifact Content:")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py:22:            print("-" * 30)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py:23:            print(df.iloc[0]['content'])
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py:24:            print("-" * 30)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\inspect_db.py-25-        
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\automate_healing.py-8-    # 1. Start Observer Mode & Monitor
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\automate_healing.py:9:    print("Initializing AutonomyDriftMonitor...") #
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\scripts\automate_healing.py-10-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py-28-        timestamp = time.strftime("%H:%M:%S")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py:29:        print(f"[{timestamp}] [{level}] {message}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py-30-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py-203-    if len(sys.argv) < 2:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py:204:        print("Usage: python test_determinism.py <test_file>")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py:205:        print("Example: python test_determinism.py test_document.txt")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py-206-        sys.exit(1)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py-210-    if not test_file.exists():
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py:211:        print(f"Error: File not found: {test_file}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\test_determinism.py-212-        sys.exit(1)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-51-        if doc_records:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:52:            print(f"Found {len(doc_records)} records for bundle {bundle_id}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-53-            return True
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-88-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:89:    print(f"Note: Full purge not implemented. Bundle {bundle_id} data remains.")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-90-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-99-    """
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:100:    print("=" * 60)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:101:    print("DOCLING PIPELINE REPLAY TEST")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:102:    print("=" * 60)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-103-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-104-    # First run
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:105:    print("\n[1/4] First ingestion...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-106-    bundle_id_1 = ingest_document(test_file)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:107:    print(f"Bundle ID: {bundle_id_1}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-108-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:109:    print("\n[2/4] Waiting for processing...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-110-    if not wait_for_processing(bundle_id_1, timeout=120):
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:111:        print("ERROR: Processing timeout")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-112-        return False
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-113-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:114:    print("\n[3/4] Capturing hashes from first run...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-115-    hashes_1 = get_bundle_hashes(bundle_id_1)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:116:    print(f"Captured {len(hashes_1['chunk_hashes'])} chunk hashes")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-117-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-118-    # Second run
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:119:    print("\n[4/4] Second ingestion (same file)...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-120-    bundle_id_2 = ingest_document(test_file)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:121:    print(f"Bundle ID: {bundle_id_2}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-122-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:123:    print("\nWaiting for processing...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-124-    if not wait_for_processing(bundle_id_2, timeout=120):
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:125:        print("ERROR: Processing timeout")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-126-        return False
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-127-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:128:    print("\nCapturing hashes from second run...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-129-    hashes_2 = get_bundle_hashes(bundle_id_2)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:130:    print(f"Captured {len(hashes_2['chunk_hashes'])} chunk hashes")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-131-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-132-    # Compare
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:133:    print("\n" + "=" * 60)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:134:    print("VERIFICATION RESULTS")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:135:    print("=" * 60)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-136-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-138-    if len(hashes_1['chunk_hashes']) != len(hashes_2['chunk_hashes']):
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:139:        print(f"❌ FAIL: Chunk count mismatch")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:140:        print(f"   Run 1: {len(hashes_1['chunk_hashes'])} chunks")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:141:        print(f"   Run 2: {len(hashes_2['chunk_hashes'])} chunks")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-142-        return False
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-147-        if h1['chunk_integrity_hash'] != h2['chunk_integrity_hash']:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:148:            print(f"❌ Chunk {i} integrity hash mismatch")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-149-            mismatches += 1
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-151-    if mismatches > 0:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:152:        print(f"\n❌ FAIL: {mismatches} hash mismatches detected")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-153-        return False
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-154-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:155:    print(f"\n✅ SUCCESS: All {len(hashes_1['chunk_hashes'])} chunk hashes match!")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:156:    print("\nDeterminism verified:")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:157:    print(f"  - Identical chunk counts")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:158:    print(f"  - Identical chunk integrity hashes")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:159:    print(f"  - Pipeline is deterministic")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-160-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-167-    if len(sys.argv) < 2:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:168:        print("Usage: python replay_test.py <test_file>")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:169:        print("Example: python replay_test.py test_document.txt")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-170-        sys.exit(1)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-174-    if not Path(test_file).exists():
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py:175:        print(f"Error: File not found: {test_file}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\replay_test.py-176-        sys.exit(1)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-44-# Load model
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py:45:print(f"Loading model: {MODEL_CONFIG['embedder_model_id']}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-46-model = SentenceTransformer(MODEL_CONFIG['embedder_model_id'])
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-55-    if COLLECTION_NAME not in collection_names:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py:56:        print(f"Creating collection: {COLLECTION_NAME}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-57-        qdrant_client.create_collection(
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-75-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py:76:    print(f"Processing batch {batch_id} with {len(chunks)} chunks")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-77-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-137-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py:138:        print(f"Successfully processed batch {batch_id}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-139-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-140-    except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py:141:        print(f"Error processing batch {batch_id}: {str(e)}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-142-        raise
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-146-    """Main worker loop."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py:147:    print("Embedding worker started. Initializing collection...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-148-    initialize_collection()
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py:149:    print("Waiting for tasks...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-150-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-161-        except KeyboardInterrupt:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py:162:            print("Worker shutting down...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-163-            break
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-164-        except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py:165:            print(f"Worker error: {str(e)}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\embed_worker\worker.py-166-            time.sleep(1)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-22-except ImportError:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py:23:    print("Warning: Docling not installed. Install with: pip install docling")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-24-    DocumentConverter = None
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-85-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py:86:    print(f"Processing bundle {bundle_id}: {file_path}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-87-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-116-        chunks = chunk_text(normalized_text)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py:117:        print(f"Created {len(chunks)} chunks for bundle {bundle_id}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-118-        
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-149-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py:150:        print(f"Enqueued {len(batches)} batches for embedding")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-151-        
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-152-    except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py:153:        print(f"Error processing bundle {bundle_id}: {str(e)}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-154-        raise
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-158-    """Main worker loop."""
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py:159:    print("Docling worker started. Waiting for tasks...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-160-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-171-        except KeyboardInterrupt:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py:172:            print("Worker shutting down...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-173-            break
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-174-        except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py:175:            print(f"Worker error: {str(e)}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\docling_worker\worker.py-176-            time.sleep(1)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py-22-    """
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py:23:    print(f"Loading model: {model_id}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py-24-    model = SentenceTransformer(model_id)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py-28-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py:29:    print("Hashing model parameters...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py-30-    param_count = 0
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py-38-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py:39:    print(f"\nModel: {model_id}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py:40:    print(f"Parameters hashed: {param_count}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py:41:    print(f"Weights SHA256: {weights_hash}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py-42-    
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py-54-    
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\pipeline\compute_weights_hash.py:55:    print(f"\nHash written to: {output_file}")
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-119-        except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py:120:            print(f"Failed to persist telemetry event: {e}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-121-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-212-        except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py:213:            print(f"Failed to persist structural gap: {e}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-214-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-286-        except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py:287:            print(f"Failed to persist transformer diff: {e}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-288-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-422-        except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py:423:            print(f"Failed to persist diagnostic report: {e}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-424-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-493-        except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py:494:            print(f"Failed to persist DMN token: {e}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\telemetry_service.py-495-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py-26-        while iteration < max_retries:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py:27:            print(f"--- Iteration {iteration + 1}: Testing Artifact {artifact.artifact_id} ---")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py-28-            
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py-32-            if report.status == "PASS":
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py:33:                print("✓ System Healthy: Solution Verified.")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py-34-                return artifact
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py-36-            # Phase 2 Self-Healing: Route feedback back to Coder
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py:37:            print(f"✗ Failure Detected: {report.critique}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py-38-            artifact = await self.coder.generate_solution(
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py-43-
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py:44:        print("!! Max retries reached. Human intervention required.")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\orchestrator\main.py-45-        return None
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\models\nvidia\downloading\fetch_nvidia_models.py-170-            path = download_foundation_model(model_to_download)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\models\nvidia\downloading\fetch_nvidia_models.py:171:            print(f"Successfully downloaded: {path}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\models\nvidia\downloading\fetch_nvidia_models.py-172-        except Exception as e:
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\models\nvidia\downloading\fetch_nvidia_models.py:173:            print(f"Error: {e}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\models\nvidia\downloading\fetch_nvidia_models.py-174-            sys.exit(1)
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\models\nvidia\downloading\fetch_nvidia_models.py-176-        available = list_available_models()
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\models\nvidia\downloading\fetch_nvidia_models.py:177:        print("Available models:")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\models\nvidia\downloading\fetch_nvidia_models.py:178:        print(f"Foundation: {available['foundation_models']}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\models\nvidia\downloading\fetch_nvidia_models.py:179:        print(f"Trained: {available['trained_models']}")
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\mlops\train_vehicle_agents.py-360-    # Print stats
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\mlops\train_vehicle_agents.py:361:    print("\n" + "=" * 60)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\mlops\train_vehicle_agents.py:362:    print("Training Statistics")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\mlops\train_vehicle_agents.py:363:    print("=" * 60)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\mlops\train_vehicle_agents.py-364-    stats = trainer.get_stats()
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\mlops\train_vehicle_agents.py:365:    print(json.dumps(stats, indent=2))
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\agents\researcher.py-12-        """
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\agents\researcher.py:13:        print(f"[{self.name}] Researching: {topic}...")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\agents\researcher.py-14-        
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\agents\trained_model_agent.py-298-        result = await agent.analyze_driving_scenario(observation)
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\agents\trained_model_agent.py:299:        print(json.dumps(result, indent=2))
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\agents\trained_model_agent.py-300-
+--
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\agents\trained_model_agent.py-302-        stats = agent.get_stats()
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\agents\trained_model_agent.py:303:        print(f"\nAgent Stats: {stats}")
+c:\Users\eqhsp\Documents\GitHub\A2A_MCP\agents\trained_model_agent.py-304-

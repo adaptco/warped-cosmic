@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "AxQxOS/TaskReceipt/v1",
+  "title": "TaskReceipt",
+  "type": "object",
+  "required": [
+    "schema",
+    "taskId",
+    "requestingAgent",
+    "targetRole",
+    "format",
+    "status",
+    "createdAt"
+  ],
+  "properties": {
+    "schema": {"const": "AxQxOS/TaskReceipt/v1"},
+    "taskId": {"type": "string", "minLength": 1},
+    "requestingAgent": {"type": "string", "minLength": 1},
+    "targetRole": {"type": "string", "minLength": 1},
+    "format": {"type": "string", "enum": ["json", "yaml", "markdown"]},
+    "payload": {},
+    "webhookUrl": {"type": ["string", "null"]},
+    "status": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "ROUTED",
+        "QUEUED_FOR_SCAFFOLD",
+        "SCAFFOLDED",
+        "COMPLETE",
+        "FAILED"
+      ]
+    },
+    "createdAt": {"type": "string", "format": "date-time"},
+    "completedAt": {"type": ["string", "null"], "format": "date-time"},
+    "result": {},
+    "assignedTo": {"type": ["string", "null"]},
+    "signature": {"type": ["string", "null"]}
+  },
+  "additionalProperties": true
+}

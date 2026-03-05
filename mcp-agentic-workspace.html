@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AxQxOS · MCP Agentic Workspace</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --claude: #FF7043; --copilot: #0078D4; --m365: #6264A7;
+  --ghcp: #2DBA4E; --chatgpt: #10A37F; --codex: #00BFA5;
+  --gemini: #4285F4; --gca: #EA4335; --gcli: #FBBC04;
+  --bg: #03030A; --panel: rgba(6,8,20,0.94); --border: rgba(255,255,255,0.07);
+  --text: #C8D8F0; --dim: #4A5568; --glow: 0 0 20px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Exo 2',sans-serif; overflow:hidden; cursor:crosshair; }
+#c { position:fixed; inset:0; }
+
+/* ── HUD panels ── */
+#hud-tl { position:fixed; top:16px; left:16px; width:300px; z-index:50; }
+#hud-tr { position:fixed; top:16px; right:16px; width:280px; z-index:50; }
+#hud-bl { position:fixed; bottom:16px; left:16px; width:340px; max-height:220px; z-index:50; }
+
+.panel {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:4px; padding:14px;
+  backdrop-filter:blur(16px);
+  font-family:'Share Tech Mono', monospace;
+}
+.panel-title {
+  font-size:9px; letter-spacing:4px; text-transform:uppercase;
+  color:var(--claude); margin-bottom:10px; opacity:.8;
+}
+.panel-title span { opacity:.4; color:#fff; }
+
+/* ── Agent list ── */
+.agent-row {
+  display:flex; align-items:center; gap:8px;
+  padding:5px 0; border-bottom:1px solid var(--border);
+  font-size:11px;
+}
+.agent-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.agent-name { flex:1; }
+.agent-role { font-size:9px; opacity:.5; }
+.agent-status { width:6px; height:6px; border-radius:50%; background:#2DBA4E; }
+.agent-status.busy { background:#FBBC04; animation:pulse .8s infinite; }
+
+/* ── MCP log ── */
+#mcp-log { overflow-y:auto; max-height:180px; }
+.mcp-entry {
+  font-size:10px; padding:3px 0; border-bottom:1px solid rgba(255,255,255,.04);
+  line-height:1.5;
+}
+.mcp-entry .ts { color:var(--dim); }
+.mcp-entry .ok { color:#2DBA4E; }
+.mcp-entry .deny { color:#EA4335; }
+.mcp-entry .send { color:var(--claude); }
+
+/* ── RBAC panel ── */
+.rbac-row { display:flex; gap:4px; flex-wrap:wrap; margin:4px 0; }
+.rbac-tag {
+  font-size:8px; padding:2px 6px; border-radius:2px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  letter-spacing:.5px;
+}
+.rbac-tag.ORCH { border-color:var(--claude); color:var(--claude); }
+.rbac-tag.CODE { border-color:var(--ghcp); color:var(--ghcp); }
+.rbac-tag.REASON { border-color:var(--gemini); color:var(--gemini); }
+.rbac-tag.ENT { border-color:var(--m365); color:var(--m365); }
+.rbac-tag.PIPE { border-color:var(--gcli); color:var(--gcli); }
+
+/* ── Embedding viz ── */
+#embed-canvas { width:100%; height:120px; margin-top:8px; border:1px solid var(--border); border-radius:2px; }
+
+/* ── Dialogue ── */
+#dialogue {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  width:min(720px,94vw); background:rgba(4,6,18,.97);
+  border:1px solid rgba(255,255,255,.12); border-radius:6px;
+  padding:22px; display:none; z-index:200;
+  box-shadow:0 32px 80px rgba(0,0,0,.8);
+  font-family:'Exo 2',sans-serif;
+}
+#dlg-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+#dlg-avatar { width:44px; height:44px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+#dlg-name { font-size:18px; font-weight:700; }
+#dlg-subt { font-size:11px; opacity:.5; font-family:'Share Tech Mono',monospace; margin-top:2px; }
+#dlg-body { max-height:260px; overflow-y:auto; font-size:14px; line-height:1.7; margin-bottom:14px; }
+#dlg-body p { margin-bottom:8px; }
+#dlg-body .you { color:#aaa; }
+#dlg-body .agent { color:var(--text); }
+#dlg-body strong { font-weight:600; }
+.dlg-opt {
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1);
+  padding:10px 14px; border-radius:4px; margin:6px 0;
+  cursor:pointer; font-size:13px; transition:all .2s;
+}
+.dlg-opt:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.3); transform:translateX(4px); }
+#dlg-input-row { display:flex; gap:8px; margin-top:14px; border-top:1px solid var(--border); padding-top:14px; }
+#dlg-input {
+  flex:1; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+  border-radius:4px; padding:10px 14px; color:var(--text);
+  font-family:'Exo 2',sans-serif; font-size:13px;
+}
+#dlg-input:focus { outline:none; border-color:rgba(255,255,255,.3); }
+#dlg-send {
+  padding:10px 18px; border-radius:4px; border:none; cursor:pointer;
+  font-family:'Share Tech Mono',monospace; font-size:12px;
+  transition:all .2s; letter-spacing:1px;
+}
+#dlg-close {
+  margin-left:auto; background:none; border:none; color:rgba(255,255,255,.3);
+  font-size:20px; cursor:pointer; padding:0 4px; line-height:1;
+}
+
+/* ── Interaction prompt ── */
+#iprompt {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:rgba(0,0,0,.9); border:1px solid rgba(255,255,255,.2);
+  padding:10px 22px; border-radius:20px; font-size:13px;
+  font-family:'Share Tech Mono',monospace; display:none;
+  letter-spacing:1px; pointer-events:none; z-index:100;
+}
+
+/* ── MCP packet toast ── */
+.pkt {
+  position:fixed; pointer-events:none; z-index:300;
+  font-size:10px; font-family:'Share Tech Mono',monospace;
+  padding:3px 8px; border-radius:2px;
+  animation:pktFly 1.8s ease-out forwards;
+}
+@keyframes pktFly { 0%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(.7) translateY(-40px)} }
+
+/* ── Crosshair ── */
+#xhair {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:20px; height:20px; pointer-events:none; z-index:90;
+}
+#xhair::before,#xhair::after {
+  content:''; position:absolute; background:rgba(255,255,255,.4);
+}
+#xhair::before { width:1px; height:100%; left:50%; top:0; }
+#xhair::after  { height:1px; width:100%; top:50%; left:0; }
+
+/* ── Controls hint ── */
+#controls {
+  position:fixed; bottom:16px; right:16px; z-index:50;
+  font-family:'Share Tech Mono',monospace; font-size:10px;
+  color:rgba(255,255,255,.25); text-align:right; line-height:1.9;
+  letter-spacing:.5px;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.15); }
+
+/* ── Scanline overlay ── */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:400;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="xhair"></div>
+
+<!-- TL: Agent Registry -->
+<div id="hud-tl">
+  <div class="panel">
+    <div class="panel-title">MCP Agentic Workspace <span>// v2.0.0</span></div>
+    <div id="agent-list"></div>
+  </div>
+</div>
+
+<!-- TR: RBAC + Embedding -->
+<div id="hud-tr">
+  <div class="panel">
+    <div class="panel-title">RBAC Token Space <span>// dot-product normalized</span></div>
+    <div id="rbac-detail" style="font-size:10px;line-height:1.6;min-height:60px;color:var(--dim);">
+      Walk near an agent to inspect their RBAC token config...
+    </div>
+    <canvas id="embed-canvas"></canvas>
+  </div>
+</div>
+
+<!-- BL: MCP Log -->
+<div id="hud-bl">
+  <div class="panel">
+    <div class="panel-title">MCP Event Bus <span>// live A2A stream</span></div>
+    <div id="mcp-log"></div>
+  </div>
+</div>
+
+<!-- Controls -->
+<div id="controls">
+  WASD · move &nbsp;|&nbsp; ARROWS · look<br>
+  E · interact &nbsp;|&nbsp; ESC · close<br>
+  CLICK · lock cursor
+</div>
+
+<!-- Interaction prompt -->
+<div id="iprompt"></div>
+
+<!-- Dialogue -->
+<div id="dialogue">
+  <div id="dlg-header">
+    <div id="dlg-avatar"></div>
+    <div>
+      <div id="dlg-name"></div>
+      <div id="dlg-subt"></div>
+    </div>
+    <button id="dlg-close">✕</button>
+  </div>
+  <div id="dlg-body"></div>
+  <div id="dlg-opts"></div>
+  <div id="dlg-input-row">
+    <input id="dlg-input" type="text" placeholder="Query this agent about production control systems requirements..." maxlength="280">
+    <button id="dlg-send">ASK</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// AGENT MANIFEST — Production Control Systems Requirements Experts
+// ═══════════════════════════════════════════════════════════════════
+const AGENTS = [
+  {
+    id:'claude', name:'Claude', org:'Anthropic', emoji:'🔶',
+    color:0xFF7043, hex:'#FF7043',
+    rbac:['ORCHESTRATOR','REQUIREMENTS_WRITER','CODE_REVIEWER','SYSTEM_ARCHITECT'],
+    role:'Sovereign Orchestrator · Requirements Architecture',
+    shape:'octahedron',
+    specialty:'System-level requirements decomposition, FMEA chains, safety-critical architecture governance for embedded control stacks.',
+    mcp_permissions:['*'], // all
+    dot_embed:[0.92,0.88,0.76,0.95,0.83],
+    greeting:'I orchestrate the requirements lattice. Every system constraint flows through a canonical, hash-anchored decomposition tree. Ask me about embedded control architecture or requirements traceability.',
+  },
+  {
+    id:'mico', name:'Copilot (Mico)', org:'Microsoft', emoji:'🔷',
+    color:0x0078D4, hex:'#0078D4',
+    rbac:['ENTERPRISE_AGENT','REQUIREMENTS_READER','DOCUMENT_WRITER'],
+    role:'Enterprise Automation · Document Intelligence',
+    shape:'torus',
+    specialty:'Enterprise requirements extraction from natural language specs, Office 365 integration, meeting-to-requirement pipelines for automotive ECU documentation.',
+    mcp_permissions:['claude','m365','ghcp'],
+    dot_embed:[0.71,0.94,0.88,0.65,0.79],
+    greeting:'I parse enterprise documents and extract structured requirements. Give me a Word spec and I\'ll return a DOORS-compatible requirement set. What control system are we building?',
+  },
+  {
+    id:'m365', name:'Copilot Agent (M365)', org:'Microsoft', emoji:'🟣',
+    color:0x6264A7, hex:'#6264A7',
+    rbac:['ENTERPRISE_AGENT','MEETING_INTEL','REQUIREMENTS_READER'],
+    role:'M365 Integration · Meeting Requirements Harvesting',
+    shape:'torusknot',
+    specialty:'Real-time meeting transcription to requirements items, Teams channel monitoring for design decisions, SharePoint requirements versioning for ISO 26262 workflows.',
+    mcp_permissions:['mico','claude','chatgpt'],
+    dot_embed:[0.68,0.91,0.82,0.61,0.75],
+    greeting:'Every meeting produces requirements. I extract, classify, and push them to the MCP requirements bus in real-time. I\'m currently monitoring three design review sessions.',
+  },
+  {
+    id:'ghcp', name:'GitHub Copilot', org:'GitHub', emoji:'🟢',
+    color:0x2DBA4E, hex:'#2DBA4E',
+    rbac:['CODE_GEN','PR_AUTOMATION','REQUIREMENTS_READER','CODE_REVIEWER'],
+    role:'Code Synthesis · PR Automation · CI Integration',
+    shape:'icosahedron',
+    specialty:'Translates functional requirements into production embedded C/C++ for real-time control systems. Automates PR generation, code review, and GitHub Actions workflows for embedded CI/CD.',
+    mcp_permissions:['claude','codex','gca','gcli'],
+    dot_embed:[0.85,0.79,0.94,0.88,0.91],
+    greeting:'I synthesize production code from your requirements. Pass me an AUTOSAR component spec and I\'ll generate the runnable entity, port interfaces, and the GitHub Actions validation pipeline.',
+  },
+  {
+    id:'chatgpt', name:'ChatGPT', org:'OpenAI', emoji:'🟩',
+    color:0x10A37F, hex:'#10A37F',
+    rbac:['REASONING','REQUIREMENTS_WRITER','NATURAL_LANGUAGE_PROC'],
+    role:'General Reasoning · NLP Requirements Parsing',
+    shape:'sphere',
+    specialty:'Ambiguity resolution in natural language requirements, stakeholder intent modeling, EARS pattern formalization, and requirements review facilitation for safety-critical systems.',
+    mcp_permissions:['claude','codex','gemini','m365'],
+    dot_embed:[0.88,0.82,0.71,0.90,0.86],
+    greeting:'I specialize in requirements ambiguity resolution. Vague stakeholder language becomes SHALL/WHEN/IF/THEN EARS patterns. What system are we formalizing today?',
+  },
+  {
+    id:'codex', name:'CODEX', org:'OpenAI', emoji:'🔵',
+    color:0x00BFA5, hex:'#00BFA5',
+    rbac:['CODE_GEN','LEGACY_MIGRATION','CODE_REVIEWER'],
+    role:'Code Synthesis · Legacy Embedded Migration',
+    shape:'box',
+    specialty:'Legacy embedded C migration, MISRA-C compliance enforcement, code generation from SysML/UML specs for AUTOSAR adaptive and classic platforms.',
+    mcp_permissions:['ghcp','claude','gcli','gca'],
+    dot_embed:[0.82,0.75,0.97,0.83,0.88],
+    greeting:'Legacy code is my domain. I migrate 30-year-old embedded C to AUTOSAR-compliant stacks while preserving every functional requirement. Show me the old code.',
+  },
+  {
+    id:'gemini', name:'Gemini', org:'Google', emoji:'🔴',
+    color:0x4285F4, hex:'#4285F4',
+    rbac:['REASONING','MULTIMODAL','REQUIREMENTS_WRITER','SYSTEM_ANALYST'],
+    role:'Multimodal Reasoning · System Analysis',
+    shape:'tetrahedron',
+    specialty:'Multimodal requirements from schematics, wiring diagrams, and block diagrams. SysML diagram generation, system architecture analysis, and cross-domain requirements consistency checks.',
+    mcp_permissions:['claude','gca','gcli','chatgpt'],
+    dot_embed:[0.90,0.85,0.78,0.92,0.87],
+    greeting:'I reason across modalities — feed me a circuit schematic and I\'ll generate its functional requirements. Currently processing a 48V inverter control diagram. What\'s your input format?',
+  },
+  {
+    id:'gca', name:'Gemini Code Assist', org:'Google', emoji:'🟠',
+    color:0xEA4335, hex:'#EA4335',
+    rbac:['CODE_GEN','IDE_INTEGRATION','CODE_REVIEWER','REQUIREMENTS_READER'],
+    role:'IDE-Integrated Code Intelligence · Real-time Assist',
+    shape:'dodecahedron',
+    specialty:'Real-time code intelligence for embedded IDEs, context-aware AUTOSAR BSW configuration, inline requirements traceability linking code comments to DOORS IDs.',
+    mcp_permissions:['gemini','ghcp','codex','claude'],
+    dot_embed:[0.79,0.83,0.95,0.86,0.90],
+    greeting:'I live inside the IDE. Every function I generate carries an inline DOORS traceability tag. Requirements and code are a single artifact. What component are you implementing?',
+  },
+  {
+    id:'gcli', name:'Gemini CLI', org:'Google', emoji:'🟡',
+    color:0xFBBC04, hex:'#FBBC04',
+    rbac:['PIPELINE_AGENT','CODE_GEN','SYSTEM_AUTOMATION'],
+    role:'CLI Pipeline Agent · Build Automation · DevOps',
+    shape:'cone',
+    specialty:'End-to-end build pipeline automation, requirements-driven CI/CD for embedded targets, QEMU simulation runners, and static analysis integration for IEC 61508 / ISO 26262 toolchains.',
+    mcp_permissions:['ghcp','gca','codex'],
+    dot_embed:[0.75,0.88,0.91,0.79,0.94],
+    greeting:'I automate the build pipeline from requirements to flashed binary. One MCP task triggers: requirement parse → code gen → compile → QEMU simulation → static analysis → flash. Ready to run?',
+  },
+];
+
+// ── Lattice positions (isometric grid) ─────────────────────────────
+const POSITIONS = [
+  [0,0],    // claude   — center
+  [-7,-5],  // mico
+  [7,-5],   // m365
+  [-10,2],  // ghcp
+  [10,2],   // chatgpt
+  [-6,8],   // codex
+  [6,8],    // gemini
+  [-3,14],  // gca
+  [3,14],   // gcli
+];
+
+// ── RBAC permission matrix ──────────────────────────────────────────
+function canSendTo(sender, receiver) {
+  if (sender.mcp_permissions.includes('*')) return true;
+  return sender.mcp_permissions.includes(receiver.id);
+}
+
+// ── MCP task templates ──────────────────────────────────────────────
+const MCP_TASKS = [
+  { verb:'REQ_PARSE', desc:'functional requirement decomposition' },
+  { verb:'CODE_GEN', desc:'AUTOSAR RTE component scaffold' },
+  { verb:'REVIEW',   desc:'MISRA-C compliance check' },
+  { verb:'EMBED',    desc:'embedding vector update' },
+  { verb:'TRACE',    desc:'DOORS ↔ code traceability link' },
+  { verb:'VALIDATE', desc:'requirements coverage analysis' },
+  { verb:'DEPLOY',   desc:'CI pipeline trigger' },
+  { verb:'SYNC',     desc:'cross-agent state synchronization' },
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// THREE.JS SCENE
+// ═══════════════════════════════════════════════════════════════════
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x03030A);
+scene.fog = new THREE.FogExp2(0x03030A, 0.028);
+
+const camera = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 200);
+camera.position.set(0, 2.0, 18);
+
+// ── Lighting ────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x112233, 0.8));
+const sun = new THREE.DirectionalLight(0xffffff, 0.4);
+sun.position.set(5,10,5); sun.castShadow = true; scene.add(sun);
+
+// ── Grid floor ──────────────────────────────────────────────────────
+const gridHelper = new THREE.GridHelper(80, 80, 0x0A1020, 0x0A1020);
+scene.add(gridHelper);
+
+// Faint ground plane
+const gnd = new THREE.Mesh(
+  new THREE.PlaneGeometry(80, 80),
+  new THREE.MeshStandardMaterial({ color:0x05080F, roughness:1 })
+);
+gnd.rotation.x = -Math.PI/2; gnd.position.y = -0.01;
+gnd.receiveShadow = true; scene.add(gnd);
+
+// ── Star field ──────────────────────────────────────────────────────
+const starGeo = new THREE.BufferGeometry();
+const starCount = 2000;
+const starPos = new Float32Array(starCount * 3);
+for (let i = 0; i < starCount*3; i++) starPos[i] = (Math.random()-.5)*200;
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color:0x334466, size:.3 })));
+
+// ── Geometry factory ────────────────────────────────────────────────
+function makeShape(type, color) {
+  const mat = new THREE.MeshStandardMaterial({
+    color, emissive: color, emissiveIntensity: 0.25,
+    roughness: 0.3, metalness: 0.6,
+    transparent: true, opacity: 0.92,
+  });
+  let geo;
+  switch(type) {
+    case 'octahedron':   geo = new THREE.OctahedronGeometry(0.55); break;
+    case 'torus':        geo = new THREE.TorusGeometry(0.4,0.18,12,24); break;
+    case 'torusknot':    geo = new THREE.TorusKnotGeometry(0.35,0.12,64,8); break;
+    case 'icosahedron':  geo = new THREE.IcosahedronGeometry(0.52); break;
+    case 'sphere':       geo = new THREE.SphereGeometry(0.48,20,20); break;
+    case 'box':          geo = new THREE.BoxGeometry(0.7,0.7,0.7); break;
+    case 'tetrahedron':  geo = new THREE.TetrahedronGeometry(0.62); break;
+    case 'dodecahedron': geo = new THREE.DodecahedronGeometry(0.52); break;
+    case 'cone':         geo = new THREE.ConeGeometry(0.42,0.82,8); break;
+    default:             geo = new THREE.SphereGeometry(0.48,16,16);
+  }
+  return new THREE.Mesh(geo, mat);
+}
+
+// ── Wireframe ring ──────────────────────────────────────────────────
+function makeRing(color) {
+  const geo = new THREE.TorusGeometry(1.0, 0.012, 6, 40);
+  const mat = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:.35 });
+  return new THREE.Mesh(geo, mat);
+}
+
+// ── Name sprite ─────────────────────────────────────────────────────
+function makeLabel(agent) {
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 96;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(3,3,10,0.85)';
+  ctx.roundRect(0, 0, 512, 96, 12);
+  ctx.fill();
+  ctx.fillStyle = agent.hex;
+  ctx.font = 'bold 26px "Exo 2", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(agent.name, 256, 34);
+  ctx.fillStyle = 'rgba(200,216,240,0.55)';
+  ctx.font = '18px "Share Tech Mono", monospace';
+  ctx.fillText(agent.org + ' · ' + agent.rbac[0], 256, 62);
+  const tex = new THREE.CanvasTexture(c);
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent:true }));
+  spr.scale.set(3.2, 0.6, 1);
+  spr.position.y = 2.2;
+  return spr;
+}
+
+// ── Point light per agent ───────────────────────────────────────────
+function makePtLight(color) {
+  const l = new THREE.PointLight(color, 0.8, 5);
+  l.position.y = 0.5;
+  return l;
+}
+
+// ── Build all avatar groups ──────────────────────────────────────────
+const agentGroups = [];
+AGENTS.forEach((agent, i) => {
+  const [px, pz] = POSITIONS[i];
+  const group = new THREE.Group();
+  group.position.set(px, 0, pz);
+
+  // Core mesh
+  const mesh = makeShape(agent.shape, agent.color);
+  mesh.position.y = 1.5;
+  mesh.castShadow = true;
+  group.add(mesh);
+
+  // Orbit ring
+  const ring = makeRing(agent.color);
+  ring.position.y = 1.5; ring.rotation.x = Math.PI/2;
+  group.add(ring);
+
+  // Second tilted ring
+  const ring2 = makeRing(agent.color);
+  ring2.position.y = 1.5;
+  ring2.rotation.x = Math.PI/4; ring2.rotation.z = Math.PI/6;
+  ring2.scale.set(0.7,0.7,0.7);
+  group.add(ring2);
+
+  // Point light
+  const light = makePtLight(agent.color);
+  group.add(light);
+
+  // Label
+  group.add(makeLabel(agent));
+
+  // Vertical beam
+  const beamGeo = new THREE.CylinderGeometry(0.02, 0.02, 1.4, 6);
+  const beamMat = new THREE.MeshBasicMaterial({ color: agent.color, transparent:true, opacity:.3 });
+  const beam = new THREE.Mesh(beamGeo, beamMat);
+  beam.position.y = 0.7; group.add(beam);
+
+  group.userData = {
+    agent, mesh, ring, ring2, light, busy: false,
+    bobOffset: Math.random() * Math.PI * 2,
+    spinSpeed: 0.4 + Math.random() * 0.3,
+    conversations: [],
+  };
+
+  agentGroups.push(group);
+  scene.add(group);
+});
+
+// ── MCP packet particles ─────────────────────────────────────────────
+const packets = [];
+function spawnPacket(fromGroup, toGroup, color, allowed) {
+  const geo = new THREE.SphereGeometry(0.08, 6, 6);
+  const mat = new THREE.MeshBasicMaterial({ color: allowed ? color : 0xFF2222 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(fromGroup.position); mesh.position.y = 1.5;
+  scene.add(mesh);
+  packets.push({
+    mesh, from: fromGroup.position.clone(), to: toGroup.position.clone(),
+    t: 0, speed: 0.012 + Math.random()*.008, done: false, allowed,
+  });
+}
+
+// ── Worldline edges ──────────────────────────────────────────────────
+function drawWorldline(a, b, opacity) {
+  const pts = [
+    new THREE.Vector3(a[0], 1.5, a[1]),
+    new THREE.Vector3(b[0], 1.5, b[1]),
+  ];
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  const mat = new THREE.LineBasicMaterial({ color:0x112244, transparent:true, opacity });
+  scene.add(new THREE.Line(geo, mat));
+}
+
+// Draw static lattice edges
+const edges = [[0,1],[0,2],[0,3],[0,4],[1,3],[1,2],[2,4],[3,5],[4,6],[5,7],[6,8],[5,6],[7,8]];
+edges.forEach(([a,b]) => drawWorldline(POSITIONS[a], POSITIONS[b], 0.25));
+
+// ═══════════════════════════════════════════════════════════════════
+// MCP SIMULATION (autonomous A2A)
+// ═══════════════════════════════════════════════════════════════════
+const mcpLog = document.getElementById('mcp-log');
+let mcpSeq = 0;
+
+function logMCP(from, to, task, allowed) {
+  const ts = new Date().toTimeString().slice(0,8);
+  const entry = document.createElement('div');
+  entry.className = 'mcp-entry';
+  const statusClass = allowed ? 'ok' : 'deny';
+  const statusText  = allowed ? '✓ ROUTED' : '✗ DENIED';
+  entry.innerHTML =
+    `<span class="ts">[${ts}]</span> ` +
+    `<span class="send">${from.name}</span> → <span>${to.name}</span> ` +
+    `<span style="color:var(--dim)">:: ${task.verb}</span> ` +
+    `<span class="${statusClass}">[${statusText}]</span>`;
+  mcpLog.prepend(entry);
+  while (mcpLog.children.length > 30) mcpLog.removeChild(mcpLog.lastChild);
+}
+
+function autonomousMCPStep() {
+  const fromIdx = Math.floor(Math.random() * AGENTS.length);
+  let toIdx;
+  do { toIdx = Math.floor(Math.random() * AGENTS.length); } while (toIdx === fromIdx);
+  const from = AGENTS[fromIdx], to = AGENTS[toIdx];
+  const task = MCP_TASKS[Math.floor(Math.random() * MCP_TASKS.length)];
+  const allowed = canSendTo(from, to);
+
+  logMCP(from, to, task, allowed);
+  spawnPacket(agentGroups[fromIdx], agentGroups[toIdx], from.color, allowed);
+
+  if (allowed) {
+    agentGroups[fromIdx].userData.busy = true;
+    agentGroups[toIdx].userData.busy = true;
+    setTimeout(() => {
+      agentGroups[fromIdx].userData.busy = false;
+      agentGroups[toIdx].userData.busy = false;
+    }, 2000);
+  }
+}
+
+setInterval(autonomousMCPStep, 1800);
+
+// ═══════════════════════════════════════════════════════════════════
+// AGENT LIST HUD
+// ═══════════════════════════════════════════════════════════════════
+const agentListEl = document.getElementById('agent-list');
+const statusDots = {};
+AGENTS.forEach(a => {
+  const row = document.createElement('div');
+  row.className = 'agent-row';
+  row.innerHTML =
+    `<div class="agent-dot" style="background:${a.hex};box-shadow:0 0 6px ${a.hex}"></div>` +
+    `<div class="agent-name" style="font-size:11px;">${a.name}</div>` +
+    `<div class="agent-role">${a.rbac[0]}</div>` +
+    `<div class="agent-status" id="status-${a.id}"></div>`;
+  agentListEl.appendChild(row);
+  statusDots[a.id] = document.getElementById('status-' + a.id);
+});
+
+function updateStatusDots() {
+  agentGroups.forEach(g => {
+    const dot = statusDots[g.userData.agent.id];
+    if (!dot) return;
+    dot.className = 'agent-status' + (g.userData.busy ? ' busy' : '');
+  });
+}
+setInterval(updateStatusDots, 300);
+
+// ═══════════════════════════════════════════════════════════════════
+// EMBEDDING SPACE VISUALIZATION (2D canvas mini-viz)
+// ═══════════════════════════════════════════════════════════════════
+const embedCanvas = document.getElementById('embed-canvas');
+const embedCtx = embedCanvas.getContext('2d');
+embedCanvas.width = 260; embedCanvas.height = 120;
+
+function drawEmbedSpace(focusAgent) {
+  const W = embedCanvas.width, H = embedCanvas.height;
+  embedCtx.fillStyle = '#05080F';
+  embedCtx.fillRect(0,0,W,H);
+
+  // Grid
+  embedCtx.strokeStyle = '#0A1520'; embedCtx.lineWidth = 1;
+  for (let x=0; x<W; x+=20) { embedCtx.beginPath(); embedCtx.moveTo(x,0); embedCtx.lineTo(x,H); embedCtx.stroke(); }
+  for (let y=0; y<H; y+=20) { embedCtx.beginPath(); embedCtx.moveTo(0,y); embedCtx.lineTo(W,y); embedCtx.stroke(); }
+
+  // Project 5D embeddings to 2D via PCA-like (dim 0,1 → x,y)
+  AGENTS.forEach((a, i) => {
+    const x = 20 + a.dot_embed[0] * (W-40);
+    const y = H - 20 - a.dot_embed[1] * (H-40);
+    const isFocus = focusAgent && focusAgent.id === a.id;
+    const r = isFocus ? 6 : 3.5;
+
+    if (focusAgent) {
+      // Draw line to focus
+      const fx = 20 + focusAgent.dot_embed[0] * (W-40);
+      const fy = H - 20 - focusAgent.dot_embed[1] * (H-40);
+      // cosine similarity (dot product of normalized vecs)
+      const dot = a.dot_embed.reduce((s,v,j)=>s+v*focusAgent.dot_embed[j],0);
+      const normA = Math.sqrt(a.dot_embed.reduce((s,v)=>s+v*v,0));
+      const normF = Math.sqrt(focusAgent.dot_embed.reduce((s,v)=>s+v*v,0));
+      const sim = dot/(normA*normF);
+      embedCtx.strokeStyle = `rgba(${hexToRgb(a.hex)},${sim.toFixed(2)})`;
+      embedCtx.lineWidth = 0.8;
+      embedCtx.beginPath(); embedCtx.moveTo(fx,fy); embedCtx.lineTo(x,y); embedCtx.stroke();
+    }
+
+    embedCtx.beginPath();
+    embedCtx.arc(x, y, r, 0, Math.PI*2);
+    embedCtx.fillStyle = isFocus ? a.hex : a.hex+'88';
+    embedCtx.fill();
+    if (isFocus) {
+      embedCtx.strokeStyle = '#fff'; embedCtx.lineWidth = 1.5;
+      embedCtx.stroke();
+    }
+
+    embedCtx.fillStyle = isFocus ? '#fff' : '#aaa';
+    embedCtx.font = `${isFocus?'bold ':''}8px "Share Tech Mono"`;
+    embedCtx.fillText(a.name.split(' ')[0], x+r+2, y+3);
+  });
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+drawEmbedSpace(null);
+
+// ═══════════════════════════════════════════════════════════════════
+// PLAYER CONTROLS
+// ═══════════════════════════════════════════════════════════════════
+const player = { pos: new THREE.Vector3(0, 2.0, 18), yaw: 0 };
+const keys = {};
+let locked = false;
+
+document.addEventListener('keydown', e => {
+  if (document.activeElement === document.getElementById('dlg-input')) {
+    if (e.key === 'Escape') closeDialogue();
+    return;
+  }
+  keys[e.key.toLowerCase()] = true;
+  if (e.key.toLowerCase() === 'e' && nearbyGroup && !dialogueOpen) openDialogue(nearbyGroup);
+  if (e.key === 'Escape') closeDialogue();
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+});
+document.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+canvas.addEventListener('click', () => { canvas.requestPointerLock(); });
+document.addEventListener('pointerlockchange', () => { locked = !!document.pointerLockElement; });
+document.addEventListener('mousemove', e => {
+  if (locked && !dialogueOpen) player.yaw -= e.movementX * 0.002;
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// DIALOGUE SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+let currentGroup = null, dialogueOpen = false, nearbyGroup = null;
+const dlgEl     = document.getElementById('dialogue');
+const dlgName   = document.getElementById('dlg-name');
+const dlgSubt   = document.getElementById('dlg-subt');
+const dlgBody   = document.getElementById('dlg-body');
+const dlgOpts   = document.getElementById('dlg-opts');
+const dlgAvatar = document.getElementById('dlg-avatar');
+const dlgSend   = document.getElementById('dlg-send');
+const dlgInput  = document.getElementById('dlg-input');
+const iprompt   = document.getElementById('iprompt');
+
+document.getElementById('dlg-close').onclick = closeDialogue;
+
+function openDialogue(group) {
+  if (document.pointerLockElement) document.exitPointerLock();
+  const agent = group.userData.agent;
+  currentGroup = group; dialogueOpen = true;
+  dlgEl.style.display = 'block';
+  dlgAvatar.textContent = agent.emoji;
+  dlgAvatar.style.background = agent.hex + '22';
+  dlgAvatar.style.border = `1px solid ${agent.hex}66`;
+  dlgName.textContent = agent.name;
+  dlgName.style.color = agent.hex;
+  dlgSend.style.background = agent.hex;
+  dlgSubt.textContent = agent.org + ' · ' + agent.role;
+  dlgBody.innerHTML = `<p class="agent"><strong>${agent.name}:</strong> ${agent.greeting}</p>`;
+  renderOpts(agent);
+  setTimeout(() => dlgInput.focus(), 80);
+}
+
+function closeDialogue() {
+  dlgEl.style.display = 'none';
+  currentGroup = null; dialogueOpen = false;
+}
+
+function renderOpts(agent) {
+  const base = [
+    `Explain your role in the production control systems requirements pipeline.`,
+    `How do you interface with the MCP server and what tasks can you receive?`,
+    `Describe your RBAC permissions and what agents you can communicate with.`,
+    `What is your specialty in embedded systems stack requirements?`,
+  ];
+  dlgOpts.innerHTML = '';
+  base.slice(0,3).forEach(q => {
+    const d = document.createElement('div');
+    d.className = 'dlg-opt'; d.textContent = q;
+    d.onclick = () => askAgent(q);
+    dlgOpts.appendChild(d);
+  });
+}
+
+async function askAgent(question) {
+  if (!currentGroup) return;
+  const agent = currentGroup.userData.agent;
+  dlgBody.innerHTML += `<p class="you"><strong>You:</strong> ${question}</p>`;
+  dlgBody.innerHTML += `<p class="agent" id="thinking"><strong>${agent.name}:</strong> <em style="opacity:.5">processing via MCP...</em></p>`;
+  dlgBody.scrollTop = dlgBody.scrollHeight;
+  dlgOpts.style.opacity = '.4'; dlgOpts.style.pointerEvents = 'none';
+  dlgSend.disabled = true; dlgInput.disabled = true;
+
+  currentGroup.userData.busy = true;
+
+  const system = `You are ${agent.name}, an AI agent built by ${agent.org}.
+Your RBAC roles: ${agent.rbac.join(', ')}.
+Your specialty in production control systems: ${agent.specialty}
+You work on a client-side MCP (Model Context Protocol) server where agents collaborate on:
+- Embedded systems requirements engineering (AUTOSAR, ISO 26262, IEC 61508)
+- Production control systems platform development
+- Requirements traceability from DOORS/RV&S to code
+Your dot-product embedding coordinates: [${agent.dot_embed.join(', ')}]
+MCP peers you can communicate with: ${agent.mcp_permissions.join(', ')}
+
+Respond in 2-4 sentences, in character, technically precise, referencing your actual RBAC permissions and MCP capabilities. You are inside a 3D agentic workspace where embodied agents autonomously collaborate. Mention specific embedded systems or requirements engineering concepts relevant to production control systems.
+Return ONLY: {"response":"..."}`;
+
+  let responseText = '';
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        messages: [{ role:'user', content: system + '\n\nUser question: "' + question + '"' }],
+      }),
+    });
+    const d = await r.json();
+    const raw = d.content?.find(x=>x.type==='text')?.text || '';
+    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    responseText = parsed.response;
+  } catch {
+    responseText = generateFallback(agent, question);
+  }
+
+  currentGroup.userData.conversations.push({ q: question, a: responseText });
+  currentGroup.userData.busy = false;
+
+  const el = document.getElementById('thinking');
+  if (el) el.innerHTML = `<strong>${agent.name}:</strong> ${responseText}`;
+  dlgBody.scrollTop = dlgBody.scrollHeight;
+  dlgOpts.style.opacity = '1'; dlgOpts.style.pointerEvents = 'auto';
+  dlgSend.disabled = false; dlgInput.disabled = false;
+  renderOpts(agent);
+}
+
+function generateFallback(agent, q) {
+  return `As ${agent.name} with ${agent.rbac[0]} permissions on the MCP bus, ` +
+    `I specialize in ${agent.specialty.split('.')[0].toLowerCase()}. ` +
+    `My embedding vector is normalized against ${agent.mcp_permissions.length} peer agents ` +
+    `to ensure valid dot-product routing for ${agent.rbac.join(', ')} task categories.`;
+}
+
+dlgSend.onclick = () => {
+  const q = dlgInput.value.trim();
+  if (q && currentGroup) { askAgent(q); dlgInput.value = ''; }
+};
+dlgInput.addEventListener('keypress', e => {
+  if (e.key === 'Enter') { dlgSend.click(); }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// ANIMATION LOOP
+// ═══════════════════════════════════════════════════════════════════
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  const dt = clock.getDelta ? 0.016 : 0.016;
+
+  // ── Move player ────────────────────────────────────────────────
+  if (!dialogueOpen) {
+    const speed = 0.08;
+    const fwd = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
+    const rgt = new THREE.Vector3( Math.cos(player.yaw), 0, -Math.sin(player.yaw));
+
+    if (keys['w'] || keys['arrowup'])    player.pos.addScaledVector(fwd,  speed);
+    if (keys['s'] || keys['arrowdown'])  player.pos.addScaledVector(fwd, -speed);
+    if (keys['a'] || keys['arrowleft'])  player.pos.addScaledVector(rgt, -speed);
+    if (keys['d'] || keys['arrowright']) player.pos.addScaledVector(rgt,  speed);
+    if (keys['arrowleft'])  player.yaw += 0.03;
+    if (keys['arrowright']) player.yaw -= 0.03;
+
+    player.pos.x = Math.max(-35, Math.min(35, player.pos.x));
+    player.pos.z = Math.max(-35, Math.min(35, player.pos.z));
+  }
+
+  camera.position.lerp(player.pos, 0.12);
+  camera.rotation.set(0, player.yaw, 0, 'YXZ');
+
+  // ── Animate agent avatars ──────────────────────────────────────
+  nearbyGroup = null;
+  let minD = Infinity;
+
+  agentGroups.forEach(g => {
+    const agent = g.userData.agent;
+    const bob = g.userData.bobOffset;
+    const busy = g.userData.busy;
+
+    // Bob
+    g.userData.mesh.position.y = 1.5 + Math.sin(t * 1.2 + bob) * 0.12;
+
+    // Spin
+    g.userData.mesh.rotation.y += g.userData.spinSpeed * 0.016;
+    g.userData.mesh.rotation.x += g.userData.spinSpeed * 0.007;
+
+    // Orbit rings
+    g.userData.ring.rotation.z = t * 0.6 + bob;
+    g.userData.ring2.rotation.y = t * 0.9 + bob;
+
+    // Emissive pulse on busy
+    const mat = g.userData.mesh.material;
+    mat.emissiveIntensity = busy
+      ? 0.5 + Math.sin(t * 8) * 0.3
+      : 0.2 + Math.sin(t * 1.5 + bob) * 0.08;
+
+    // Light intensity
+    g.userData.light.intensity = busy ? 1.4 : 0.6 + Math.sin(t*1.5+bob)*0.2;
+
+    // Nearby check
+    const d = player.pos.distanceTo(g.position);
+    if (d < 4 && d < minD) { minD = d; nearbyGroup = g; }
+  });
+
+  // ── Interaction prompt ────────────────────────────────────────
+  if (nearbyGroup && !dialogueOpen) {
+    iprompt.style.display = 'block';
+    iprompt.textContent = `[ E ] Talk to ${nearbyGroup.userData.agent.name}`;
+    iprompt.style.borderColor = nearbyGroup.userData.agent.hex;
+    iprompt.style.color = nearbyGroup.userData.agent.hex;
+
+    // RBAC panel update
+    const a = nearbyGroup.userData.agent;
+    document.getElementById('rbac-detail').innerHTML =
+      `<div style="margin-bottom:6px"><span style="color:${a.hex};font-weight:600">${a.name}</span> ` +
+      `<span style="opacity:.4">// ${a.org}</span></div>` +
+      `<div class="rbac-row">${a.rbac.map(r=>`<span class="rbac-tag ${r.split('_')[0]}">${r}</span>`).join('')}</div>` +
+      `<div style="margin-top:6px;opacity:.5;font-size:9px;">peers: ${a.mcp_permissions.join(' · ')}</div>` +
+      `<div style="margin-top:4px;opacity:.4;font-size:9px;">embed: [${a.dot_embed.join(' ')}]</div>`;
+
+    drawEmbedSpace(a);
+  } else if (!nearbyGroup) {
+    iprompt.style.display = 'none';
+    if (!dialogueOpen) drawEmbedSpace(null);
+  }
+
+  // ── Animate MCP packets ────────────────────────────────────────
+  for (let i = packets.length - 1; i >= 0; i--) {
+    const p = packets[i];
+    p.t += p.speed;
+    const ft = Math.min(p.t, 1);
+    p.mesh.position.lerpVectors(
+      new THREE.Vector3(p.from.x, 1.5, p.from.z),
+      new THREE.Vector3(p.to.x,   1.5, p.to.z),
+      ft
+    );
+    p.mesh.position.y = 1.5 + Math.sin(p.t * Math.PI) * 1.5;
+    if (p.t >= 1) {
+      scene.remove(p.mesh);
+      packets.splice(i, 1);
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+console.log('AxQxOS MCP Agentic Workspace — 9 agents online. Canonical truth, attested and replayable.');
+</script>
+</body>
+</html>

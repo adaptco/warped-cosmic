@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "AxQxOS/LoRAReceipt/v1",
+  "type": "object",
+  "required": ["schema", "run_id", "status"],
+  "properties": {
+    "schema": {"const": "AxQxOS/LoRAReceipt/v1"},
+    "run_id": {"type": "string"},
+    "status": {"type": "string"},
+    "canonical_hash": {"type": "string"}
+  },
+  "additionalProperties": true
+}

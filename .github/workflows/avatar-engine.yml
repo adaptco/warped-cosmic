@@ -1,0 +1,333 @@
+name: AxQxOS Avatar Engine Pipeline
+
+on:
+  push:
+    branches: [main, "merge/avatar-engine-*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      capsule:
+        description: "Avatar capsule binding"
+        required: true
+        default: "Sol.F1"
+      run_lora:
+        description: "Run LoRA fine-tune jobs"
+        type: boolean
+        default: false
+      deploy_env:
+        description: "Deployment environment"
+        type: choice
+        options: [staging, production]
+        default: staging
+
+env:
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.11"
+  REGISTRY: ghcr.io
+  IMAGE_BASE: ${{ github.repository_owner }}/axqxos-avatar-engine
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    outputs:
+      canonical_hash: ${{ steps.hash.outputs.hash }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute canonical hash
+        id: hash
+        run: |
+          HASH=$(find mcp-server agents mlops antigravity requirements-bots schemas scripts .github/workflows -type f \( -name "*.py" -o -name "*.js" -o -name "*.yml" -o -name "*.yaml" -o -name "*.json" \) | sort | xargs sha256sum | sha256sum | awk '{print $1}')
+          echo "hash=${HASH}" >> "$GITHUB_OUTPUT"
+          echo "Canonical hash: ${HASH}"
+
+      - name: Verify merge receipts
+        run: |
+          for receipt in manifests/merge-receipt-*.json; do
+            [ -f "$receipt" ] || continue
+            jq -e '.schema == "AxQxOS/MergeReceipt/v1"' "$receipt"
+            jq -e '.canonical == "Canonical truth, attested and replayable."' "$receipt"
+          done
+
+  guardrails:
+    runs-on: ubuntu-latest
+    needs: integrity
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Python dependencies
+        run: pip install -r requirements/base.txt
+
+      - name: Validate repository structure
+        run: pytest tests/test_repo_structure.py -q
+
+      - name: Validate workflow path references
+        run: python scripts/validate_workflow_paths.py
+
+      - name: Validate contract schemas for manifests
+        run: python scripts/validate_schemas.py manifests
+
+      - name: Required secret check (non-PR)
+        if: github.event_name != 'pull_request'
+        env:
+          LLM_TARGET: ${{ vars.LLM_TARGET || 'gemini' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CODESTRAL_API_KEY: ${{ secrets.CODESTRAL_API_KEY }}
+        run: python scripts/check_required_secrets.py
+
+  lint_typecheck:
+    runs-on: ubuntu-latest
+    needs: guardrails
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Python tools
+        run: pip install -r requirements/dev.txt
+
+      - name: Install Node dependencies
+        run: |
+          npm install --prefix mcp-server
+          npm install --prefix requirements-bots
+
+      - name: Ruff
+        run: ruff check mlops antigravity agents telemetry scripts tests
+
+      - name: Mypy
+        run: mypy mlops antigravity agents telemetry scripts --ignore-missing-imports
+
+      - name: Node syntax checks
+        run: |
+          node --check mcp-server/index.js
+          node --check mcp-server/a2a-arbiter.js
+          node --check mcp-server/webhook-router.js
+          node --check requirements-bots/mcp-requirements.js
+          node --check wham-engine/wham-shell.js
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint_typecheck
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install test dependencies
+        run: pip install -r requirements/base.txt
+
+      - name: Run unit and contract tests
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: pytest tests -v --cov=. --cov-report=xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+        continue-on-error: true
+
+  antigravity:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'workflow_dispatch' && inputs.run_lora == true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install -r requirements/antigravity.txt
+
+      - name: Run Antigravity scoring
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          REWARD_THRESHOLD: "0.75"
+        run: |
+          python antigravity/sandbox.py \
+            --corpus config/task_library.json \
+            --capsule "${{ inputs.capsule }}" \
+            --output .antigravity/lora-corpus.json
+
+      - name: Upload scored corpus
+        uses: actions/upload-artifact@v4
+        with:
+          name: lora-corpus
+          path: .antigravity/lora-corpus.json
+
+  lora_train:
+    runs-on: ubuntu-latest
+    needs: antigravity
+    if: needs.antigravity.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Download corpus
+        uses: actions/download-artifact@v4
+        with:
+          name: lora-corpus
+          path: .antigravity/
+
+      - name: Install dependencies
+        run: pip install -r requirements/mlops.txt
+
+      - name: Launch LoRA tuning
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LORA_OUTPUT_DIR: weights/lora
+          RECEIPT_DIR: manifests/lora-receipts
+        run: |
+          python mlops/gemini_lora.py \
+            --corpus .antigravity/lora-corpus.json \
+            --capsule "${{ inputs.capsule }}" \
+            --epochs 5 \
+            --lr 0.001
+
+      - name: Upload LoRA receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: lora-receipt
+          path: manifests/lora-receipts/
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push MCP server
+        uses: docker/build-push-action@v5
+        with:
+          context: ./mcp-server
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/mcp:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/mcp:${{ github.sha }}
+
+      - name: Build and push Agent image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./agents/Dockerfile
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/agent:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/agent:${{ github.sha }}
+
+  firebase_sim:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Validate Firebase manifest schema basics
+        run: |
+          python - <<'PYEOF'
+          import json
+          import yaml
+          from pathlib import Path
+
+          p = Path('manifests/firebase-studio.yaml')
+          cfg = yaml.safe_load(p.read_text())
+          for key in ('project', 'services', 'avatarEngine'):
+              assert key in cfg, f"Missing key: {key}"
+          print(json.dumps({'valid': True, 'keys': list(cfg.keys())}, indent=2))
+          PYEOF
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build, firebase_sim]
+    if: github.ref == 'refs/heads/main'
+    environment: ${{ inputs.deploy_env || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Emit deployment receipt
+        run: |
+          mkdir -p manifests
+          RECEIPT=manifests/deploy-receipt-$(date -u +%Y%m%dT%H%M%SZ).json
+          cat > "$RECEIPT" <<EOF
+          {
+            "schema": "AxQxOS/DeployReceipt/v1",
+            "sha": "${{ github.sha }}",
+            "ref": "${{ github.ref }}",
+            "actor": "${{ github.actor }}",
+            "capsule": "${{ inputs.capsule || 'Sol.F1' }}",
+            "canonical_hash": "${{ needs.integrity.outputs.canonical_hash }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "canonical": "Canonical truth, attested and replayable."
+          }
+          EOF
+          echo "receipt_path=$RECEIPT" >> "$GITHUB_ENV"
+
+      - name: Sign deployment receipt
+        if: env.PIPELINE_SIGNING_KEY != ''
+        env:
+          PIPELINE_SIGNING_KEY: ${{ secrets.PIPELINE_SIGNING_KEY }}
+        run: python scripts/sign_receipt.py "$receipt_path"
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dispatch pipeline event
+        env:
+          WEBHOOK_URL: ${{ secrets.PIPELINE_WEBHOOK_URL }}
+        run: |
+          [ -n "$WEBHOOK_URL" ] || exit 0
+          STATUS="${{ needs.deploy.result }}"
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          cat > pipeline-event.json <<EOF
+          {
+            "event": "pipeline.complete",
+            "status": "${STATUS}",
+            "sha": "${{ github.sha }}",
+            "capsule": "${{ inputs.capsule || 'Sol.F1' }}",
+            "canonical": "Canonical truth, attested and replayable.",
+            "timestamp": "${NOW}"
+          }
+          EOF
+          curl -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -H "X-AxQxOS-Schema: AxQxOS/PipelineEvent/v1" \
+            --data-binary @pipeline-event.json

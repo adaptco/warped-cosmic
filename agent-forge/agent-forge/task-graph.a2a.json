@@ -1,0 +1,84 @@
+{
+  "schema_version": "a2a/1.0",
+  "project": "agent-forge",
+  "goal": "Multi-LLM browser automation with webhook notifications, PM task creation, MoE agent selection, Zapier orchestration, Firebase/WASM deployment",
+  "tasks": [
+    {
+      "task_id": "T-001", "name": "Browser Script Execution",
+      "agent": "BrowserAgent", "llm": "claude",
+      "inputs": ["task_spec.json"], "outputs": ["browser-result.json"],
+      "mcp_server": "http://localhost:3100/mcp", "webhook_out": "echo-relay/T-002",
+      "github_action": "browser-agent.yml"
+    },
+    {
+      "task_id": "T-002", "name": "MCP Tool Dispatch",
+      "agent": "MCPRouter", "llm": "claude",
+      "inputs": ["browser-result.json"], "outputs": ["tool-results.json"],
+      "mcp_server": "http://localhost:3100/mcp", "webhook_out": "echo-relay/T-003",
+      "github_action": "mcp-dispatch.yml"
+    },
+    {
+      "task_id": "T-003", "name": "LLM Agent Handoff (MoE)",
+      "agent": "OrchestratorAgent", "llm": "claude+gpt4+gemini",
+      "inputs": ["tool-results.json", "airtable-mixture.json"], "outputs": ["agent-response.json"],
+      "mcp_server": null, "webhook_out": "echo-relay/T-004",
+      "github_action": "llm-handoff.yml"
+    },
+    {
+      "task_id": "T-004", "name": "Webhook Notification",
+      "agent": "NotifierAgent", "llm": "any",
+      "inputs": ["agent-response.json"], "outputs": ["notification-receipt.json"],
+      "mcp_server": null, "webhook_out": "echo-relay/T-005",
+      "github_action": "notify.yml"
+    },
+    {
+      "task_id": "T-005", "name": "PM Task Creation (Notion/ClickUp)",
+      "agent": "PMAgent", "llm": "claude",
+      "inputs": ["notification-receipt.json"], "outputs": ["task-ids.json"],
+      "mcp_server": "https://mcp.notion.com/mcp", "webhook_out": "echo-relay/T-006",
+      "github_action": "pm-tasks.yml"
+    },
+    {
+      "task_id": "T-006", "name": "Airtable MoE Selection",
+      "agent": "MoESelector", "llm": "any",
+      "inputs": ["task-ids.json"], "outputs": ["airtable-mixture.json"],
+      "mcp_server": "https://mcp.zapier.com/api/mcp/a/23993723/mcp", "webhook_out": "echo-relay/T-007",
+      "github_action": "moe-select.yml"
+    },
+    {
+      "task_id": "T-007", "name": "Scaffold Generation",
+      "agent": "ClaudeOrchestrator", "llm": "claude",
+      "inputs": ["airtable-mixture.json"], "outputs": ["scaffold.zip", "task-graph.a2a.json"],
+      "mcp_server": null, "webhook_out": "echo-relay/T-008",
+      "github_action": "scaffold.yml"
+    },
+    {
+      "task_id": "T-008", "name": "Zapier Job Orchestration",
+      "agent": "ZapierOrchestrator", "llm": "any",
+      "inputs": ["scaffold.zip"], "outputs": ["zapier-job-ids.json"],
+      "mcp_server": "https://mcp.zapier.com/api/mcp/a/23993723/mcp", "webhook_out": "echo-relay/T-009",
+      "github_action": "zapier-jobs.yml"
+    },
+    {
+      "task_id": "T-009", "name": "Gemini UI + Firebase Studio",
+      "agent": "GeminiUIAgent", "llm": "gemini",
+      "inputs": ["scaffold.zip"], "outputs": ["ui-components/", "firebase-config.json"],
+      "mcp_server": null, "webhook_out": "echo-relay/T-010",
+      "github_action": "gemini-ui.yml"
+    },
+    {
+      "task_id": "T-010", "name": "Vertex AI UX + WASM",
+      "agent": "VertexAgent", "llm": "vertex",
+      "inputs": ["ui-components/"], "outputs": ["wasm/svo.wasm", "ux-artifact.json"],
+      "mcp_server": null, "webhook_out": "echo-relay/T-011",
+      "github_action": "vertex-wasm.yml"
+    },
+    {
+      "task_id": "T-011", "name": "GitHub Push + Firebase Deploy",
+      "agent": "DotCI", "llm": "any",
+      "inputs": ["wasm/svo.wasm", "ui-components/"], "outputs": ["deploy-receipt.json"],
+      "mcp_server": null, "webhook_out": null,
+      "github_action": "deploy.yml"
+    }
+  ]
+}

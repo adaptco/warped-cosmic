@@ -1,0 +1,242 @@
+{
+  "schema_version": "a2a/1.0",
+  "project": "axqxos-unified-pipeline",
+  "goal": "Unblock repository visibility, standardize Claude-capable runtime, and automate recursive MoA handoffs.",
+  "created_at": "2026-03-05T00:00:00Z",
+  "tasks": [
+    {
+      "task_id": "T-001",
+      "name": "Safe Directory Allowlist",
+      "description": "Discover git repositories and enforce explicit safe.directory entries.",
+      "inputs": [],
+      "outputs": [
+        "artifact:safe-directory-report"
+      ],
+      "agent_card": "agents/Dot.md",
+      "rasic_role": "R",
+      "boo_binding": "Dot",
+      "llm_target": "any",
+      "model_id": "gpt-4o",
+      "mcp_server": null,
+      "webhook_out": "/webhooks/echo/safe-directory",
+      "github_action": "moa-orchestrator.yml",
+      "retry_policy": {
+        "max_attempts": 3,
+        "backoff_seconds": 5
+      },
+      "timeout_seconds": 300,
+      "status": "pending",
+      "created_at": "2026-03-05T00:00:00Z",
+      "completed_at": null
+    },
+    {
+      "task_id": "T-002",
+      "name": "Diff Visibility Mapper",
+      "description": "Generate deterministic diff reports with weighted Top 3 priorities.",
+      "inputs": [
+        "artifact:safe-directory-report"
+      ],
+      "outputs": [
+        "artifact:diff-priority-json",
+        "artifact:diff-priority-md"
+      ],
+      "agent_card": "agents/Gloh.md",
+      "rasic_role": "R",
+      "boo_binding": "Gloh",
+      "llm_target": "gemini",
+      "model_id": "gemini-2.0-flash",
+      "mcp_server": null,
+      "webhook_out": "/webhooks/echo/diff-priority",
+      "github_action": "daily-status-report.yml",
+      "retry_policy": {
+        "max_attempts": 3,
+        "backoff_seconds": 5
+      },
+      "timeout_seconds": 600,
+      "status": "pending",
+      "created_at": "2026-03-05T00:00:00Z",
+      "completed_at": null
+    },
+    {
+      "task_id": "T-003",
+      "name": "Claude Runtime Baseline",
+      "description": "Route agent runtime through provider-agnostic LLM adapter with Claude support.",
+      "inputs": [
+        "artifact:diff-priority-json"
+      ],
+      "outputs": [
+        "artifact:runtime-router"
+      ],
+      "agent_card": "agents/Spryte.md",
+      "rasic_role": "R",
+      "boo_binding": "Spryte",
+      "llm_target": "claude",
+      "model_id": "claude-sonnet-4-20250514",
+      "mcp_server": null,
+      "webhook_out": "/webhooks/echo/runtime-baseline",
+      "github_action": "avatar-engine.yml",
+      "retry_policy": {
+        "max_attempts": 2,
+        "backoff_seconds": 5
+      },
+      "timeout_seconds": 600,
+      "status": "pending",
+      "created_at": "2026-03-05T00:00:00Z",
+      "completed_at": null
+    },
+    {
+      "task_id": "T-004",
+      "name": "Recursive MoA Orchestration",
+      "description": "Run Planner→Architect→Coder→Tester→Reviewer chain and persist plan/execution receipts.",
+      "inputs": [
+        "artifact:runtime-router"
+      ],
+      "outputs": [
+        "artifact:moa-plan",
+        "artifact:moa-execution"
+      ],
+      "agent_card": "agents/Celine.md",
+      "rasic_role": "A",
+      "boo_binding": "Celine",
+      "llm_target": "claude",
+      "model_id": "claude-sonnet-4-20250514",
+      "mcp_server": null,
+      "webhook_out": "/webhooks/echo/moa-handoff",
+      "github_action": "moa-orchestrator.yml",
+      "retry_policy": {
+        "max_attempts": 3,
+        "backoff_seconds": 10
+      },
+      "timeout_seconds": 900,
+      "status": "pending",
+      "created_at": "2026-03-05T00:00:00Z",
+      "completed_at": null
+    },
+    {
+      "task_id": "T-005",
+      "name": "Luma Receipt Attestation",
+      "description": "Validate generated artifacts and emit quality receipt.",
+      "inputs": [
+        "artifact:moa-execution"
+      ],
+      "outputs": [
+        "artifact:luma-receipt"
+      ],
+      "agent_card": "agents/Luma.md",
+      "rasic_role": "A",
+      "boo_binding": "Luma",
+      "llm_target": "claude",
+      "model_id": "claude-sonnet-4-20250514",
+      "mcp_server": null,
+      "webhook_out": "/webhooks/echo/receipt",
+      "github_action": "moa-orchestrator.yml",
+      "retry_policy": {
+        "max_attempts": 2,
+        "backoff_seconds": 10
+      },
+      "timeout_seconds": 300,
+      "status": "pending",
+      "created_at": "2026-03-05T00:00:00Z",
+      "completed_at": null
+    },
+    {
+      "task_id": "T-006",
+      "name": "PR210 Conflict Workflow",
+      "description": "Checkpoint, checkout PR 210, merge base branch, resolve conflicts, and merge via GH CLI.",
+      "inputs": [
+        "artifact:luma-receipt"
+      ],
+      "outputs": [
+        "artifact:pr210-merge-log"
+      ],
+      "agent_card": "agents/Dot.md",
+      "rasic_role": "R",
+      "boo_binding": "Dot",
+      "llm_target": "any",
+      "model_id": "gpt-4o",
+      "mcp_server": null,
+      "webhook_out": "/webhooks/echo/pr210",
+      "github_action": "moa-orchestrator.yml",
+      "retry_policy": {
+        "max_attempts": 1,
+        "backoff_seconds": 0
+      },
+      "timeout_seconds": 1800,
+      "status": "pending",
+      "created_at": "2026-03-05T00:00:00Z",
+      "completed_at": null
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "artifact:safe-directory-report",
+      "type": "receipt",
+      "path": "artifacts/T-001/safe-directory-report.json",
+      "produced_by": "T-001",
+      "consumed_by": [
+        "T-002"
+      ]
+    },
+    {
+      "artifact_id": "artifact:diff-priority-json",
+      "type": "data",
+      "path": "artifacts/T-002/daily-diff-priority.json",
+      "produced_by": "T-002",
+      "consumed_by": [
+        "T-003"
+      ]
+    },
+    {
+      "artifact_id": "artifact:diff-priority-md",
+      "type": "doc",
+      "path": "artifacts/T-002/daily-diff-priority.md",
+      "produced_by": "T-002",
+      "consumed_by": [
+        "T-004"
+      ]
+    },
+    {
+      "artifact_id": "artifact:runtime-router",
+      "type": "code",
+      "path": "agents/llm_router.py",
+      "produced_by": "T-003",
+      "consumed_by": [
+        "T-004"
+      ]
+    },
+    {
+      "artifact_id": "artifact:moa-plan",
+      "type": "receipt",
+      "path": "artifacts/T-004/plan.json",
+      "produced_by": "T-004",
+      "consumed_by": [
+        "T-005"
+      ]
+    },
+    {
+      "artifact_id": "artifact:moa-execution",
+      "type": "receipt",
+      "path": "artifacts/T-004/execution.json",
+      "produced_by": "T-004",
+      "consumed_by": [
+        "T-005"
+      ]
+    },
+    {
+      "artifact_id": "artifact:luma-receipt",
+      "type": "receipt",
+      "path": "receipts/T-005/luma-receipt.json",
+      "produced_by": "T-005",
+      "consumed_by": [
+        "T-006"
+      ]
+    },
+    {
+      "artifact_id": "artifact:pr210-merge-log",
+      "type": "doc",
+      "path": "artifacts/T-006/pr210-merge-log.md",
+      "produced_by": "T-006",
+      "consumed_by": []
+    }
+  ]
+}

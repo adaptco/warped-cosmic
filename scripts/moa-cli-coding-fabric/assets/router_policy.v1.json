@@ -1,0 +1,119 @@
+{
+  "version": "1",
+  "default_intent": "general_coding",
+  "intent_keywords": {
+    "feature_build": [
+      "build",
+      "implement",
+      "feature",
+      "add",
+      "create",
+      "refactor"
+    ],
+    "test_repair": [
+      "test",
+      "failing",
+      "fix",
+      "bug",
+      "regression"
+    ],
+    "release_ops": [
+      "deploy",
+      "release",
+      "k8s",
+      "kubernetes",
+      "helm",
+      "terraform",
+      "cluster"
+    ],
+    "security_review": [
+      "security",
+      "vuln",
+      "harden",
+      "compliance",
+      "audit"
+    ]
+  },
+  "intent_routes": {
+    "general_coding": {
+      "agent_order": [
+        "Planner",
+        "Architect",
+        "Coder",
+        "Tester",
+        "Reviewer"
+      ],
+      "focus": {
+        "Planner": 1.0,
+        "Architect": 0.8,
+        "Coder": 1.0,
+        "Tester": 0.8,
+        "Reviewer": 0.7
+      }
+    },
+    "feature_build": {
+      "agent_order": [
+        "Planner",
+        "Architect",
+        "Coder",
+        "Tester",
+        "Reviewer"
+      ],
+      "focus": {
+        "Planner": 0.9,
+        "Architect": 1.0,
+        "Coder": 1.0,
+        "Tester": 0.8,
+        "Reviewer": 0.8
+      }
+    },
+    "test_repair": {
+      "agent_order": [
+        "Planner",
+        "Coder",
+        "Tester",
+        "Reviewer",
+        "Architect"
+      ],
+      "focus": {
+        "Planner": 0.8,
+        "Architect": 0.6,
+        "Coder": 1.0,
+        "Tester": 1.0,
+        "Reviewer": 0.8
+      }
+    },
+    "release_ops": {
+      "agent_order": [
+        "Planner",
+        "Architect",
+        "Tester",
+        "Reviewer",
+        "Coder"
+      ],
+      "focus": {
+        "Planner": 0.9,
+        "Architect": 1.0,
+        "Coder": 0.7,
+        "Tester": 1.0,
+        "Reviewer": 1.0
+      }
+    },
+    "security_review": {
+      "agent_order": [
+        "Planner",
+        "Architect",
+        "Reviewer",
+        "Coder",
+        "Tester"
+      ],
+      "focus": {
+        "Planner": 0.8,
+        "Architect": 1.0,
+        "Coder": 0.7,
+        "Tester": 0.9,
+        "Reviewer": 1.0
+      }
+    }
+  }
+}

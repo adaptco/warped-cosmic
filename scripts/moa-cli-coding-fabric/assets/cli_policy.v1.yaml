@@ -1,0 +1,63 @@
+{
+  "version": "1",
+  "allowed_tool_prefixes": [
+    "git",
+    "python",
+    "pytest",
+    "node",
+    "npm",
+    "pnpm",
+    "docker",
+    "kubectl",
+    "helm",
+    "terraform",
+    "pwsh",
+    "powershell",
+    "bash"
+  ],
+  "command_prefix_allowlist": [
+    "python -m pytest",
+    "git status",
+    "git diff",
+    "git ls-files",
+    "docker --version",
+    "docker compose config",
+    "kubectl version --client",
+    "terraform version",
+    "helm version"
+  ],
+  "deny_patterns": [
+    "git reset --hard",
+    "git clean -fd",
+    "git push --force",
+    "rm -rf /",
+    "remove-item -recurse -force c:\\",
+    "format c:",
+    "del /f /s /q c:\\",
+    "shutdown /s",
+    "kubectl delete namespace kube-system"
+  ],
+  "high_risk_patterns": [
+    "kubectl delete",
+    "helm uninstall",
+    "terraform apply",
+    "terraform destroy",
+    "docker system prune",
+    "git push",
+    "remove-item -recurse -force",
+    "rm -rf "
+  ],
+  "medium_risk_patterns": [
+    "docker compose up",
+    "docker compose down",
+    "kubectl apply",
+    "terraform plan",
+    "helm upgrade",
+    "git checkout",
+    "git commit"
+  ],
+  "require_confirm_for_risk": [
+    "high"
+  ],
+  "max_output_chars": 8000
+}

@@ -1,0 +1,241 @@
+name: AxQxOS WHAM Daily MLOps
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      run_lora:
+        description: "Run Antigravity + LoRA cycle"
+        type: boolean
+        default: false
+      run_pr_autocode:
+        description: "Run PR autocode and merge checks"
+        type: boolean
+        default: false
+      yield_curve:
+        description: "Compute quantum SDE yield curve"
+        type: boolean
+        default: true
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+
+jobs:
+  yield_curve:
+    runs-on: ubuntu-latest
+    if: inputs.yield_curve != 'false'
+    outputs:
+      gamma_yield: ${{ steps.yield.outputs.gamma_yield }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install deps
+        run: pip install -r requirements/mlops.txt
+
+      - name: Compute yield curve
+        id: yield
+        run: |
+          mkdir -p manifests
+          python mlops/yield_engine.py \
+            --run-id "daily-$(date -u +%Y%m%d)" \
+            --output manifests/yield-curve-$(date -u +%Y%m%d).json
+          GAMMA=$(python - <<'PYEOF'
+          import json
+          from glob import glob
+          latest = sorted(glob('manifests/yield-curve-*.json'))[-1]
+          with open(latest) as f:
+              data = json.load(f)
+          print(data['gamma_yield'])
+          PYEOF
+          )
+          echo "gamma_yield=${GAMMA}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yield-curve-${{ github.run_number }}
+          path: manifests/yield-curve-*.json
+
+  requirements_sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Start requirements MCP
+        run: |
+          npm install --prefix requirements-bots
+          node requirements-bots/mcp-requirements.js &
+          sleep 3
+          curl -sf http://localhost:3002/health
+
+      - name: Export RTM YAML
+        run: |
+          mkdir -p manifests
+          curl -sf http://localhost:3002/rtm.yaml > manifests/rtm-$(date -u +%Y%m%d).yaml
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rtm-${{ github.run_number }}
+          path: manifests/rtm-*.yaml
+
+  witness_tests:
+    runs-on: ubuntu-latest
+    needs: requirements_sync
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Start MCP services
+        run: |
+          npm install --prefix requirements-bots
+          npm install --prefix mcp-server
+          node requirements-bots/mcp-requirements.js &
+          node mcp-server/index.js &
+          sleep 4
+
+      - name: Run witness smoke
+        run: |
+          python - <<'PYEOF'
+          import asyncio, json
+          import websockets
+
+          async def run():
+              async with websockets.connect('ws://localhost:3002') as ws:
+                  init = json.loads(await ws.recv())
+                  assert init['type'] == 'SESSION_INIT'
+                  await ws.send(json.dumps({'type': 'FETCH_RTM'}))
+                  payload = json.loads(await ws.recv())
+                  assert payload['type'] == 'RTM'
+
+          asyncio.run(run())
+          PYEOF
+
+      - name: Emit witness receipt
+        run: |
+          mkdir -p manifests
+          cat > manifests/witness-receipt-$(date -u +%Y%m%dT%H%M%S).json <<EOF
+          {
+            "schema": "AxQxOS/WitnessReceipt/v1",
+            "agent": "DOT",
+            "capsule": "Glyph.Trace",
+            "run": "${{ github.run_number }}",
+            "sha": "${{ github.sha }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "canonical": "Canonical truth, attested and replayable."
+          }
+          EOF
+
+  pr_autocode:
+    runs-on: ubuntu-latest
+    needs: witness_tests
+    if: github.event_name == 'workflow_dispatch' && inputs.run_pr_autocode == true
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch open PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr list --json number,title,state --state open --limit 20
+
+      - name: Autocode analysis placeholder
+        run: echo "PR autocode enabled by workflow dispatch"
+
+  changelog:
+    runs-on: ubuntu-latest
+    needs: pr_autocode
+    if: github.event_name == 'workflow_dispatch' && inputs.run_pr_autocode == true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Generate changelog draft
+        run: |
+          git log --oneline -20 > CHANGELOG_DAILY.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: changelog-${{ github.run_number }}
+          path: CHANGELOG_DAILY.md
+
+  daily_lora:
+    runs-on: ubuntu-latest
+    needs: yield_curve
+    if: github.event_name == 'workflow_dispatch' && inputs.run_lora == true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install deps
+        run: pip install -r requirements/mlops.txt
+
+      - name: Antigravity pre-scoring
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          REWARD_THRESHOLD: "0.75"
+        run: |
+          python antigravity/sandbox.py \
+            --corpus config/task_library.json \
+            --capsule Sol.F1
+
+      - name: LoRA fine-tune
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python mlops/gemini_lora.py \
+            --corpus .antigravity/*-corpus.json \
+            --capsule Sol.F1 \
+            --epochs 3
+
+  seal:
+    runs-on: ubuntu-latest
+    needs: [yield_curve, witness_tests]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Emit daily receipt
+        run: |
+          mkdir -p manifests
+          cat > manifests/daily-receipt-$(date -u +%Y%m%d).json <<EOF
+          {
+            "schema": "AxQxOS/DailyMLOpsReceipt/v1",
+            "date": "$(date -u +%Y-%m-%d)",
+            "run": "${{ github.run_number }}",
+            "sha": "${{ github.sha }}",
+            "gamma_yield": "${{ needs.yield_curve.outputs.gamma_yield }}",
+            "jobs": {
+              "yield_curve": "${{ needs.yield_curve.result }}",
+              "witness_tests": "${{ needs.witness_tests.result }}"
+            },
+            "canonical": "Canonical truth, attested and replayable."
+          }
+          EOF

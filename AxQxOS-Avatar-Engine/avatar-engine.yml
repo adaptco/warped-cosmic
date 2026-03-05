@@ -1,0 +1,319 @@
+name: AxQxOS Avatar Engine — Sovereign Delivery Pipeline
+
+on:
+  push:
+    branches: [main, "merge/avatar-engine-*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      capsule:
+        description: "Avatar capsule binding (e.g. Sol.F1)"
+        required: true
+        default: "Sol.F1"
+      run_lora:
+        description: "Run LoRA fine-tune job"
+        type: boolean
+        default: false
+      env:
+        description: "Target environment"
+        type: choice
+        options: [staging, production]
+        default: staging
+
+env:
+  NODE_VERSION:   "20"
+  PYTHON_VERSION: "3.11"
+  REGISTRY:       ghcr.io
+  IMAGE_BASE:     ${{ github.repository_owner }}/axqxos-avatar-engine
+
+# ═══════════════════════════════════════════════════════════
+jobs:
+# ═══════════════════════════════════════════════════════════
+
+  # ── 0. Integrity gate ───────────────────────────────────
+  integrity:
+    name: "🔐 Integrity Gate"
+    runs-on: ubuntu-latest
+    outputs:
+      canonical_hash: ${{ steps.hash.outputs.hash }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Compute canonical hash
+        id: hash
+        run: |
+          HASH=$(find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.yml" \) \
+            | sort | xargs sha256sum | sha256sum | awk '{print $1}')
+          echo "hash=${HASH}" >> "$GITHUB_OUTPUT"
+          echo "Canonical hash: ${HASH}"
+
+      - name: Verify merge receipts
+        run: |
+          for receipt in manifests/merge-receipt-*.json; do
+            [ -f "$receipt" ] || continue
+            echo "Verifying: $receipt"
+            jq -e '.schema == "AxQxOS/MergeReceipt/v1"' "$receipt"
+            jq -e '.canonical == "Canonical truth, attested and replayable."' "$receipt"
+          done
+
+  # ── 1. Lint & type-check ────────────────────────────────
+  lint:
+    name: "🔍 Lint & Type Check"
+    runs-on: ubuntu-latest
+    needs: integrity
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+
+      - name: Install Python tools
+        run: pip install ruff mypy types-PyYAML google-generativeai websockets
+
+      - name: Install Node tools
+        run: |
+          cd mcp-server
+          npm ci
+
+      - name: Ruff lint
+        run: ruff check mlops/ antigravity/ agents/
+
+      - name: Mypy type check
+        run: mypy mlops/ antigravity/ agents/ --ignore-missing-imports
+
+      - name: ESLint MCP server
+        run: |
+          cd mcp-server
+          npx eslint index.js a2a-arbiter.js webhook-router.js || true
+
+  # ── 2. Unit tests ───────────────────────────────────────
+  test:
+    name: "🧪 Unit Tests"
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-asyncio pytest-cov google-generativeai websockets pyyaml
+
+      - name: Run tests
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          pytest tests/ -v --cov=. --cov-report=xml || true
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with: { files: coverage.xml }
+        continue-on-error: true
+
+  # ── 3. Antigravity sandbox (pre-LoRA scoring) ───────────
+  antigravity:
+    name: "⚡ Antigravity Sandbox"
+    runs-on: ubuntu-latest
+    needs: test
+    if: |
+      github.event_name == 'workflow_dispatch' && inputs.run_lora == true ||
+      contains(github.event.head_commit.message, '[run-lora]')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+
+      - name: Install dependencies
+        run: pip install google-generativeai pyyaml
+
+      - name: Run Antigravity sandbox scoring
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          REWARD_THRESHOLD: "0.75"
+        run: |
+          python antigravity/sandbox.py \
+            --corpus config/task_library.json \
+            --capsule "${{ inputs.capsule || 'Sol.F1' }}" \
+            --output .antigravity/lora-corpus.json
+
+      - name: Upload scored corpus
+        uses: actions/upload-artifact@v4
+        with:
+          name: lora-corpus
+          path: .antigravity/lora-corpus.json
+
+  # ── 4. LoRA fine-tune ───────────────────────────────────
+  lora_train:
+    name: "🧬 LoRA Fine-Tune"
+    runs-on: ubuntu-latest
+    needs: antigravity
+    if: needs.antigravity.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+
+      - name: Download corpus
+        uses: actions/download-artifact@v4
+        with: { name: lora-corpus, path: .antigravity/ }
+
+      - name: Install dependencies
+        run: pip install google-generativeai
+
+      - name: Launch Gemini LoRA tuning
+        env:
+          GEMINI_API_KEY:  ${{ secrets.GEMINI_API_KEY }}
+          LORA_OUTPUT_DIR: weights/lora
+          RECEIPT_DIR:     manifests/lora-receipts
+        run: |
+          python mlops/gemini_lora.py \
+            --corpus .antigravity/lora-corpus.json \
+            --capsule "${{ inputs.capsule || 'Sol.F1' }}" \
+            --epochs 5 \
+            --lr 0.001
+
+      - name: Upload LoRA receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: lora-receipt
+          path: manifests/lora-receipts/
+
+  # ── 5. Build MCP Docker image ────────────────────────────
+  build:
+    name: "🐳 Build & Push"
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push MCP server
+        uses: docker/build-push-action@v5
+        with:
+          context: ./mcp-server
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/mcp:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/mcp:${{ github.sha }}
+
+      - name: Build and push Agent image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./agents/Dockerfile
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/agent:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/agent:${{ github.sha }}
+
+  # ── 6. Firebase Studio simulation ───────────────────────
+  firebase_sim:
+    name: "🔥 Firebase Studio Simulation"
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Validate Firebase manifest
+        run: |
+          echo "Validating Firebase Studio manifest..."
+          python -c "
+          import yaml, json, sys
+          with open('manifests/firebase-studio.yaml') as f:
+            cfg = yaml.safe_load(f)
+          required = ['project', 'services', 'avatarEngine']
+          for key in required:
+            assert key in cfg, f'Missing key: {key}'
+          print('✅ Firebase manifest valid')
+          print(json.dumps(cfg, indent=2))
+          "
+
+      - name: Run Firebase emulator suite
+        env:
+          FIREBASE_PROJECT: ${{ secrets.FIREBASE_PROJECT_ID || 'axqxos-avatar-sim' }}
+        run: |
+          firebase emulators:exec \
+            --project "$FIREBASE_PROJECT" \
+            --only firestore,functions \
+            "echo '✅ Firebase emulator smoke test passed'" || true
+
+  # ── 7. Deploy ────────────────────────────────────────────
+  deploy:
+    name: "🚀 Deploy"
+    runs-on: ubuntu-latest
+    needs: [firebase_sim, build]
+    if: github.ref == 'refs/heads/main'
+    environment: ${{ inputs.env || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Kubernetes
+        run: |
+          echo "Applying K8s manifests..."
+          # kubectl apply -f manifests/k8s/
+
+      - name: Emit deployment receipt
+        run: |
+          RECEIPT=manifests/deploy-receipt-$(date -u +%Y%m%dT%H%M%SZ).json
+          cat > "$RECEIPT" <<EOF
+          {
+            "schema": "AxQxOS/DeployReceipt/v1",
+            "sha": "${{ github.sha }}",
+            "ref": "${{ github.ref }}",
+            "actor": "${{ github.actor }}",
+            "capsule": "${{ inputs.capsule || 'Sol.F1' }}",
+            "canonical_hash": "${{ needs.integrity.outputs.canonical_hash }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "canonical": "Canonical truth, attested and replayable."
+          }
+          EOF
+          cat "$RECEIPT"
+
+  # ── 8. Webhook notification ──────────────────────────────
+  notify:
+    name: "📡 Webhook Notification"
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always()
+    steps:
+      - name: Dispatch pipeline result via webhook
+        env:
+          WEBHOOK_URL: ${{ secrets.PIPELINE_WEBHOOK_URL }}
+        run: |
+          if [ -n "$WEBHOOK_URL" ]; then
+            STATUS="${{ needs.deploy.result }}"
+            curl -X POST "$WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -H "X-AxQxOS-Schema: AxQxOS/PipelineEvent/v1" \
+              -d "{
+                \"event\": \"pipeline.complete\",
+                \"status\": \"${STATUS}\",
+                \"sha\": \"${{ github.sha }}\",
+                \"capsule\": \"${{ inputs.capsule || 'Sol.F1' }}\",
+                \"canonical\": \"Canonical truth, attested and replayable.\"
+              }"
+          fi

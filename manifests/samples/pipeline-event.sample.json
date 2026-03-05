@@ -1,0 +1,9 @@
+{
+  "event": "pipeline.complete",
+  "status": "success",
+  "sha": "deadbeef",
+  "capsule": "Sol.F1",
+  "canonical": "Canonical truth, attested and replayable.",
+  "timestamp": "2026-03-05T00:00:00Z",
+  "signature": null
+}

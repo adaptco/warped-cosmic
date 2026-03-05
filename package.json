@@ -1,0 +1,10 @@
+{
+  "name": "axqxos-unified-pipeline",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "lint:js": "node --check mcp-server/index.js && node --check mcp-server/a2a-arbiter.js && node --check mcp-server/webhook-router.js && node --check requirements-bots/mcp-requirements.js && node --check wham-engine/wham-shell.js",
+    "telemetry:ingest": "python telemetry/etl.py",
+    "telemetry:kpi": "python telemetry/kpi_report.py"
+  }
+}

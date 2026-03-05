@@ -1,0 +1,119 @@
+# ============================================================
+# AxQxOS Avatar Engine — Firebase Studio Project Manifest
+# manifests/firebase-studio.yaml  |  v1.0.0
+# Simulates Firebase Studio project topology for Avatar Engine
+# ============================================================
+
+schema: "AxQxOS/FirebaseStudio/v1"
+canonical: "Canonical truth, attested and replayable."
+
+project:
+  id: axqxos-avatar-engine
+  name: "AxQxOS Avatar Engine"
+  region: us-central1
+  capsule: Sol.F1
+
+# ── Services ──────────────────────────────────────────────
+services:
+
+  mcp_server:
+    type: cloudrun
+    image: ghcr.io/eqhsp/axqxos-avatar-engine/mcp:latest
+    port: 3001
+    env:
+      MCP_PORT: "3001"
+      CODESTRAL_API_KEY: "{{ secrets.CODESTRAL_API_KEY }}"
+    scaling:
+      min_instances: 1
+      max_instances: 10
+    health_check: /health
+
+  avatar_codegen_agent:
+    type: cloudrun
+    image: ghcr.io/eqhsp/axqxos-avatar-engine/agent:latest
+    env:
+      MCP_WS_URL: "wss://mcp.axqxos.dev"
+      GEMINI_API_KEY: "{{ secrets.GEMINI_API_KEY }}"
+      AGENT_CAPSULE: Sol.F1
+    scaling:
+      min_instances: 0
+      max_instances: 20
+
+  rag_retriever_agent:
+    type: cloudrun
+    image: ghcr.io/eqhsp/axqxos-avatar-engine/agent:latest
+    env:
+      MCP_WS_URL: "wss://mcp.axqxos.dev"
+      GEMINI_API_KEY: "{{ secrets.GEMINI_API_KEY }}"
+      AGENT_ROLE: RAG_RETRIEVER
+
+# ── Firestore ────────────────────────────────────────────
+firestore:
+  database: "(default)"
+  collections:
+    task_ledger:
+      description: "Immutable task receipts"
+      schema: "AxQxOS/TaskReceipt/v1"
+      indexes:
+        - fields: [status, createdAt]
+        - fields: [targetRole, status]
+    avatar_artifacts:
+      description: "Generated avatar modules"
+      schema: "AxQxOS/AvatarArtifact/v1"
+      indexes:
+        - fields: [capsule, generated_at]
+    lora_receipts:
+      description: "LoRA training run receipts"
+      schema: "AxQxOS/LoRAReceipt/v1"
+
+# ── Cloud Functions ──────────────────────────────────────
+functions:
+  webhook_dispatcher:
+    trigger: https
+    runtime: python311
+    source: webhooks/
+    entry_point: dispatch
+    env:
+      RECEIPT_DIR: /tmp/receipts
+
+  lora_scheduler:
+    trigger:
+      type: schedule
+      schedule: "0 2 * * *"   # 02:00 UTC daily
+    runtime: python311
+    source: mlops/
+    entry_point: scheduled_lora_run
+
+# ── Avatar Engine config ──────────────────────────────────
+avatarEngine:
+  version: "v1.0.0"
+  capsule: Sol.F1
+  prime_directive:
+    symmetry: C5_SYMMETRY
+    wheel_geometry: "5-spoke Advan GT Beyond"
+    finish: RSM
+  sde:
+    tokens: [AXIS, PLUG, TRACE, BLOOM, LUMEN, SOULOS]
+    yield_model: dynamic_trust_weighted_tapd
+  agents:
+    - role: AVATAR_CODEGEN
+      capsule: Sol.F1
+    - role: RAG_RETRIEVER
+    - role: LORA_TRAINER
+    - role: WEBHOOK_DISPATCHER
+  webhook:
+    formats: [json, markdown, yaml]
+    auth: bearer
+    retry_count: 3
+
+# ── Emulator config (local dev) ──────────────────────────
+emulators:
+  firestore:
+    port: 8080
+  functions:
+    port: 5001
+  hosting:
+    port: 5000
+  ui:
+    enabled: true
+    port: 4000

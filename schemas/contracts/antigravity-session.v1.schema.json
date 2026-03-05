@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "AxQxOS/AntigravitySession/v1",
+  "type": "object",
+  "required": ["schema", "session_id", "timestamp", "hash"],
+  "properties": {
+    "schema": {"const": "AxQxOS/AntigravitySession/v1"},
+    "session_id": {"type": "string"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "hash": {"type": "string"}
+  },
+  "additionalProperties": true
+}

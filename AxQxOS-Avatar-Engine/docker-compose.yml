@@ -1,0 +1,61 @@
+version: "3.9"
+
+# AxQxOS Avatar Engine — Local Dev Stack
+# docker compose up
+
+services:
+
+  mcp-server:
+    build: ./mcp-server
+    ports:
+      - "3001:3001"
+    environment:
+      MCP_PORT: 3001
+      CODESTRAL_API_KEY: ${CODESTRAL_API_KEY}
+    volumes:
+      - ./mcp-server:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      retries: 5
+
+  avatar-agent:
+    build:
+      context: .
+      dockerfile: agents/Dockerfile
+    environment:
+      MCP_WS_URL: ws://mcp-server:3001
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      AGENT_CAPSULE: Sol.F1
+    depends_on:
+      mcp-server:
+        condition: service_healthy
+    restart: unless-stopped
+
+  antigravity:
+    build:
+      context: .
+      dockerfile: antigravity/Dockerfile
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      ANTIGRAVITY_DIR: /workspace/.antigravity
+      REWARD_THRESHOLD: "0.75"
+    volumes:
+      - ./config:/workspace/config:ro
+      - ./antigravity-output:/workspace/.antigravity
+    profiles: ["tuning"]   # Only starts with: docker compose --profile tuning up
+
+  firebase-emulator:
+    image: andreysenov/firebase-tools:latest
+    ports:
+      - "4000:4000"   # UI
+      - "5001:5001"   # Functions
+      - "8080:8080"   # Firestore
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: firebase emulators:start --project axqxos-avatar-sim
+    profiles: ["firebase"]
+
+volumes:
+  antigravity-output:
