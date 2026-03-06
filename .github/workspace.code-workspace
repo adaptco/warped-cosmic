@@ -1,0 +1,61 @@
+{
+    "folders": [
+        {
+            "path": "c:\\Users\\eqhsp\\.claude\\projects\\agents",
+            "name": "Agents Configuration & Config"
+        },
+        {
+            "path": "c:\\Users\\eqhsp\\.claude\\projects\\mcp-server",
+            "name": "MCP Server (Unified)"
+        },
+        {
+            "path": "c:\\Users\\eqhsp\\.claude\\projects\\agent-forge",
+            "name": "Agent Forge (Scaffolding)"
+        },
+        {
+            "path": "c:\\Users\\eqhsp\\.claude\\projects\\WHAM-Agents-Dashboard",
+            "name": "WHAM Dashboard"
+        },
+        {
+            "path": "c:\\Users\\eqhsp\\.claude\\projects\\c--Users-eqhsp-Documents-GitHub-A2A-MCP",
+            "name": "A2A-MCP Fork 1"
+        },
+        {
+            "path": "c:\\Users\\eqhsp\\.claude\\projects\\c--Users-eqhsp--antigravity-A2A-MCP-A2A-MCP",
+            "name": "A2A-MCP Fork 2"
+        },
+        {
+            "path": "c:\\Users\\eqhsp\\.claude\\projects\\scripts",
+            "name": "Global Scripts"
+        },
+        {
+            "path": "C:\\",
+            "name": "C:\\ Root (Persistent Memory)",
+            "file.exclude": {
+                "**/Windows": true,
+                "**/Program Files": true,
+                "**/Program Files (x86)": true,
+                "**/Users": true,
+                "**/*": false,
+                "agent_working_style.md": false
+            }
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.git": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/CVS": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true,
+            "**/__pycache__": true,
+            "**/.pytest_cache": true
+        },
+        "search.exclude": {
+            "**/node_modules": true,
+            "**/bower_components": true,
+            "**/*.code-search": true
+        }
+    }
+}
