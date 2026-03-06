@@ -26,6 +26,23 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.11"
+
+            - name: Build deployment rework summary
+              run: |
+                  python telemetry/etl.py --root .
+                  python telemetry/kpi_report.py
+                  python telemetry/rework_report.py --repo-root .
+
+            - name: Upload telemetry artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: cd-telemetry-${{ github.run_id }}
+                  path: telemetry/output/
+
             - name: Deploy via SSH
               uses: appleboy/ssh-action@v1
               with:

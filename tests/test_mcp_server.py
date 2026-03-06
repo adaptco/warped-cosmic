@@ -2,6 +2,7 @@
 
 import sys
 import os
+from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -91,6 +92,49 @@ class TestAgentProtocol:
         caps = proto.get_capabilities(hs.agent_id)
         assert len(caps) == 2
         assert caps[0].name == "cap_a"
+
+    def test_sync_from_documents_registers_document_agents(self, tmp_path: Path):
+        registry = tmp_path / "AGENTS.md"
+        registry.write_text(
+            """### CLAUDE_BROWSER
+**Role:** Browser Automation & Rework Triage Agent · Capsule: `Forge.Trace`
+
+#### Skill.md
+
+```yaml
+skill: browser-automation-rework-triage
+version: "1.0.0"
+capsule: Forge.Trace
+
+capabilities:
+  - Playwright browser task execution from natural-language specifications
+  - Telemetry-backed rework hotspot summarization and merge conflict triage
+```
+
+#### Tools.md
+
+```yaml
+tools:
+  - name: browser_agent
+    script: agent-forge/agent-forge/agents/browser/agent.py
+```
+""",
+            encoding="utf-8",
+        )
+
+        proto = AgentProtocol()
+        proto.sync_from_documents([registry])
+
+        agents = proto.list_agents()
+        browser = next(agent for agent in agents if agent["agent_name"] == "CLAUDE_BROWSER")
+        assert browser["kind"] == "document"
+        assert browser["role"] == "Browser Automation & Rework Triage Agent"
+        assert any(source.endswith("AGENTS.md") for source in browser["sources"])
+
+        matches = proto.find_agent_by_capability(
+            "Telemetry-backed rework hotspot summarization and merge conflict triage"
+        )
+        assert browser["agent_id"] in matches
 
 
 # =====================================================================
