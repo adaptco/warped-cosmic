@@ -20,6 +20,7 @@ REQUIRED_PATHS = [
     "scripts/validate_schemas.py",
     "config/task_library.json",
     "manifests/firebase-studio.yaml",
+    "telemetry/rework_report.py",
     ".github/workflows/avatar-engine.yml",
     ".github/workflows/daily-mlops.yml",
     ".github/workflows/telemetry-daily.yml",

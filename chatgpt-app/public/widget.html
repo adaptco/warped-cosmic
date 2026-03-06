@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A2A MCP Embedding Studio</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #102031;
+        --muted: #4b5d72;
+        --accent: #0f6abf;
+        --accent-2: #1652a4;
+        --surface: #ffffff;
+        --surface-2: #f4f8fc;
+        --border: rgba(16, 32, 49, 0.14);
+        --ok: #1f8a4c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 14px;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          linear-gradient(160deg, #eaf6ff 0%, #d9e9ff 55%, #e8f4fb 100%);
+      }
+
+      .panel {
+        max-width: 780px;
+        margin: 0 auto;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 14px;
+        box-shadow: 0 10px 28px rgba(8, 27, 44, 0.12);
+      }
+
+      .title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        padding: 10px;
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+      }
+
+      label {
+        display: block;
+        font-size: 12px;
+        margin: 0 0 4px;
+        color: var(--muted);
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px;
+        font: inherit;
+        color: var(--ink);
+        background: var(--surface-2);
+      }
+
+      textarea {
+        min-height: 72px;
+        resize: vertical;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 8px 12px;
+        color: white;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        font: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .status {
+        margin-top: 10px;
+        border: 1px dashed var(--border);
+        border-radius: 10px;
+        padding: 8px;
+        font-size: 12px;
+        background: var(--surface);
+      }
+
+      .status.ok {
+        border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+      }
+
+      pre {
+        margin: 10px 0 0;
+        max-height: 260px;
+        overflow: auto;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #0f1f30;
+        color: #e7f1fb;
+        padding: 10px;
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 760px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="panel">
+      <div class="title">A2A MCP Embedding Studio</div>
+      <div class="subtitle">
+        MCP bridge widget for embedding search/upsert and orchestration command routing.
+      </div>
+
+      <section class="grid">
+        <div class="card">
+          <h3>Embedding Search</h3>
+          <label for="search-query">Query</label>
+          <input id="search-query" value="worldline orchestration" />
+          <div class="row">
+            <div>
+              <label for="search-namespace">Namespace</label>
+              <input id="search-namespace" value="default" />
+            </div>
+            <div>
+              <label for="search-topk">Top K</label>
+              <input id="search-topk" type="number" min="1" max="25" value="5" />
+            </div>
+          </div>
+          <div class="actions">
+            <button id="btn-search" type="button">Run Search</button>
+            <button id="btn-workspace" type="button">Load Workspace</button>
+            <button id="btn-render" type="button">Render Workspace</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Upsert + Orchestrate</h3>
+          <label for="upsert-namespace">Namespace</label>
+          <input id="upsert-namespace" value="default" />
+          <label for="upsert-text">Text</label>
+          <textarea id="upsert-text">Deterministic MCP embedding for A2A workflow status.</textarea>
+          <label for="orch-command">Command</label>
+          <input id="orch-command" value="!triage" />
+          <label for="orch-args">Args</label>
+          <input id="orch-args" value="daily status review" />
+          <div class="actions">
+            <button id="btn-upsert" type="button">Upsert Embedding</button>
+            <button id="btn-orchestrate" type="button">Run Command</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="status" id="status">Waiting for tool output.</div>
+      <pre id="output">{}</pre>
+    </main>
+
+    <script type="module">
+      const statusEl = document.getElementById("status");
+      const outputEl = document.getElementById("output");
+
+      const queryEl = document.getElementById("search-query");
+      const namespaceEl = document.getElementById("search-namespace");
+      const topkEl = document.getElementById("search-topk");
+      const upsertNamespaceEl = document.getElementById("upsert-namespace");
+      const upsertTextEl = document.getElementById("upsert-text");
+      const commandEl = document.getElementById("orch-command");
+      const argsEl = document.getElementById("orch-args");
+
+      const buttons = {
+        search: document.getElementById("btn-search"),
+        workspace: document.getElementById("btn-workspace"),
+        render: document.getElementById("btn-render"),
+        upsert: document.getElementById("btn-upsert"),
+        orchestrate: document.getElementById("btn-orchestrate"),
+      };
+
+      let rpcId = 0;
+      const pending = new Map();
+      let latestPayload = {};
+
+      function setStatus(text, ok = true) {
+        statusEl.textContent = text;
+        statusEl.className = ok ? "status ok" : "status";
+      }
+
+      function renderOutput(payload) {
+        latestPayload = payload ?? {};
+        outputEl.textContent = JSON.stringify(latestPayload, null, 2);
+      }
+
+      function rpcNotify(method, params) {
+        window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
+      }
+
+      function rpcRequest(method, params) {
+        return new Promise((resolve, reject) => {
+          const id = ++rpcId;
+          pending.set(id, { resolve, reject });
+          window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
+        });
+      }
+
+      window.addEventListener(
+        "message",
+        (event) => {
+          if (event.source !== window.parent) return;
+          const msg = event.data;
+          if (!msg || msg.jsonrpc !== "2.0") return;
+
+          if (typeof msg.id === "number") {
+            const pendingRequest = pending.get(msg.id);
+            if (!pendingRequest) return;
+            pending.delete(msg.id);
+            if (msg.error) {
+              pendingRequest.reject(msg.error);
+            } else {
+              pendingRequest.resolve(msg.result);
+            }
+            return;
+          }
+
+          if (msg.method === "ui/notifications/tool-result") {
+            const payload = msg.params?.structuredContent ?? {};
+            setStatus("Received model-initiated tool result.");
+            renderOutput(payload);
+          }
+        },
+        { passive: true }
+      );
+
+      async function initialize() {
+        await rpcRequest("ui/initialize", {
+          appInfo: { name: "a2a-mcp-embedding-widget", version: "1.0.0" },
+          appCapabilities: {},
+          protocolVersion: "2026-01-26",
+        });
+        rpcNotify("ui/notifications/initialized", {});
+        setStatus("Bridge initialized. Ready.");
+      }
+
+      async function callTool(name, argumentsPayload) {
+        setStatus(`Calling ${name}...`);
+        try {
+          const response = await rpcRequest("tools/call", {
+            name,
+            arguments: argumentsPayload,
+          });
+          const payload = response?.structuredContent ?? response ?? {};
+          setStatus(`${name} completed.`);
+          renderOutput(payload);
+          return payload;
+        } catch (error) {
+          setStatus(`${name} failed: ${JSON.stringify(error)}`, false);
+          renderOutput({ error, last: latestPayload });
+          throw error;
+        }
+      }
+
+      buttons.search.addEventListener("click", async () => {
+        await callTool("embedding_search", {
+          query: queryEl.value,
+          namespace: namespaceEl.value || undefined,
+          top_k: Number(topkEl.value || 5),
+        });
+      });
+
+      buttons.workspace.addEventListener("click", async () => {
+        await callTool("embedding_workspace_data", {
+          namespace: namespaceEl.value || undefined,
+          query: queryEl.value || undefined,
+          top_k: Number(topkEl.value || 5),
+        });
+      });
+
+      buttons.render.addEventListener("click", async () => {
+        await callTool("render_embedding_workspace", {
+          namespace: namespaceEl.value || undefined,
+          query: queryEl.value || undefined,
+        });
+      });
+
+      buttons.upsert.addEventListener("click", async () => {
+        await callTool("embedding_upsert", {
+          namespace: upsertNamespaceEl.value || "default",
+          text: upsertTextEl.value,
+          metadata: { source: "widget" },
+        });
+      });
+
+      buttons.orchestrate.addEventListener("click", async () => {
+        await callTool("orchestrate_command", {
+          command: commandEl.value,
+          args: argsEl.value || undefined,
+        });
+      });
+
+      initialize();
+      renderOutput({});
+    </script>
+  </body>
+</html>

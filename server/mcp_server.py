@@ -29,7 +29,7 @@ from digital_brain.thread import DigitalThread
 from middleware.wave_runtime import WaveformRuntime
 from physics_search.engine import PhysicsSearchEngine
 from schemas import AgentCapability
-from server.agent_protocol import AgentProtocol
+from server.agent_protocol import AgentProtocol, default_agent_document_paths
 from swarm.commit_agent import CommitAgent
 from swarm.orchestrator import SwarmOrchestrator
 from swarm.swarm_runner import SwarmRunner
@@ -46,6 +46,7 @@ swarm_runner = SwarmRunner(brain, thread, runtime, search_engine)
 orchestrator = swarm_runner.orchestrator
 commit_agent = swarm_runner.commit_agent
 protocol = AgentProtocol()
+protocol.sync_from_documents(default_agent_document_paths())
 
 # Register built-in agents
 protocol.handshake(

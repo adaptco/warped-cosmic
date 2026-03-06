@@ -40,6 +40,92 @@ def _truncate(text: str, max_chars: int) -> str:
     return text[:max_chars] + "...<truncated>"
 
 
+def _run_git(cwd: Path, *args: str) -> subprocess.CompletedProcess[str] | None:
+    try:
+        return subprocess.run(
+            ["git", *args],
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return None
+
+
+def _parse_git_status(output: str) -> list[dict[str, Any]]:
+    changes: list[dict[str, Any]] = []
+    for raw_line in output.splitlines():
+        line = raw_line.rstrip()
+        if not line:
+            continue
+        status = line[:2]
+        raw_path = line[3:]
+        path = raw_path.split(" -> ")[-1].replace("\\", "/")
+        changes.append(
+            {
+                "path": path,
+                "status": status,
+                "staged": status[0] not in {" ", "?", "!"},
+                "unstaged": status[1] not in {" ", "?"},
+                "untracked": status == "??",
+                "unmerged": status in {"AA", "AU", "DD", "DU", "UA", "UD", "UU"},
+            }
+        )
+    return changes
+
+
+def _summarize_working_tree(cwd: Path) -> dict[str, Any]:
+    summary = {
+        "changed_files": [],
+        "branch_changed_files": [],
+        "merge_resolution_candidates": [],
+        "artifact_candidates": [],
+    }
+
+    status_run = _run_git(cwd, "status", "--short")
+    if status_run is None or status_run.returncode != 0:
+        return summary
+
+    changed_files = _parse_git_status(status_run.stdout)
+    branch_run = _run_git(cwd, "diff", "--name-only", "main...HEAD")
+    branch_changed_files = []
+    if branch_run is not None and branch_run.returncode == 0:
+        branch_changed_files = [
+            line.strip().replace("\\", "/")
+            for line in branch_run.stdout.splitlines()
+            if line.strip()
+        ]
+
+    score_map: dict[str, dict[str, Any]] = {}
+    branch_changed = set(branch_changed_files)
+    for change in changed_files:
+        path = change["path"]
+        item = score_map.setdefault(path, {"path": path, "score": 0, "reasons": []})
+        item["score"] += 2
+        item["reasons"].append(f"working_tree:{change['status']}")
+        if change["unmerged"]:
+            item["score"] += 4
+            item["reasons"].append("unmerged")
+        if path in branch_changed:
+            item["score"] += 1
+            item["reasons"].append("changed_vs_main")
+
+    candidates = sorted(score_map.values(), key=lambda item: (-item["score"], item["path"]))
+    artifact_candidates = [
+        item["path"]
+        for item in candidates
+        if any(token in item["path"] for token in ("artifacts/", "receipts/", "manifest", ".json", ".md"))
+    ]
+
+    summary["changed_files"] = changed_files
+    summary["branch_changed_files"] = branch_changed_files
+    summary["merge_resolution_candidates"] = candidates
+    summary["artifact_candidates"] = artifact_candidates
+    return summary
+
+
 def evaluate_command(command: str, policy: dict[str, Any]) -> dict[str, Any]:
     normalized = command.strip().lower()
     tool = _extract_tool(command)
@@ -163,6 +249,7 @@ def run_guarded_commands(
         "cwd": str(cwd.resolve()),
         "execute": execute,
         "confirm_risk": confirm_risk,
+        "working_tree": _summarize_working_tree(cwd),
         "results": results,
         "summary": summary,
     }
