@@ -225,7 +225,10 @@ async def commit_create(req: CommitCreateRequest):
 @app.get("/agents")
 async def agent_list():
     """List all registered agents in the MCP network."""
-    return {"agents": protocol.list_agents()}
+    return {
+        "agents": protocol.list_agents(),
+        "runtime_product_delivery": protocol.runtime_product_delivery_schema(),
+    }
 
 
 @app.post("/agents/send")
