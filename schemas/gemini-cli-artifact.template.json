@@ -1,0 +1,36 @@
+{
+  "template_version": "1.0",
+  "skill_name": "gemini-cli-wrapper",
+  "runtime": {
+    "tool": "gemini-cli",
+    "command": "gemini",
+    "install": "npm install -g @google/gemini-cli@latest"
+  },
+  "chain_strategy": "dot_product",
+  "request": {
+    "model": "gemini-2.5-flash",
+    "approval_mode": "plan",
+    "output_format": "json"
+  },
+  "context": {
+    "working_directory": ".",
+    "include_directories": []
+  },
+  "artifacts": [
+    {
+      "id": "prompt",
+      "path": "artifacts/gemini-cli/prompt.txt",
+      "kind": "text/plain"
+    },
+    {
+      "id": "response",
+      "path": "artifacts/gemini-cli/raw-response.json",
+      "kind": "application/json"
+    },
+    {
+      "id": "envelope",
+      "path": "artifacts/gemini-cli/envelope.json",
+      "kind": "application/json"
+    }
+  ]
+}

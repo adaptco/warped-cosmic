@@ -1,0 +1,66 @@
+component_key,source_path,source_section,xml_element,implementation_xml,implementation_notes
+task_graph_root,Skills/a2a-schema.md,Task Graph Root,TaskGraph,"<TaskGraph schema_version=""a2a/1.0"">
+  <project>project-name</project>
+  <goal>one-sentence goal</goal>
+  <created_at>ISO8601</created_at>
+  <tasks>
+    <TaskNode ref=""T-001"" />
+  </tasks>
+  <artifacts>
+    <Artifact artifact_id=""artifact:id"" type=""code"">
+      <path>artifacts/T-001/file.ext</path>
+      <produced_by>T-001</produced_by>
+      <consumed_by>
+        <task_ref>T-002</task_ref>
+      </consumed_by>
+    </Artifact>
+  </artifacts>
+</TaskGraph>","Top-level XML wrapper for the A2A graph. Tasks are referenced by task_id and artifacts are nested as concrete outputs."
+task_node,Skills/a2a-schema.md,Task Node (full),TaskNode,"<TaskNode task_id=""T-001"" status=""pending"" rasic_role=""R"" boo_binding=""Luma"" llm_target=""claude"">
+  <name>string</name>
+  <description>string</description>
+  <inputs>
+    <input>T-000</input>
+    <input>artifact:id</input>
+  </inputs>
+  <outputs>
+    <output>artifact:id</output>
+  </outputs>
+  <agent_card>agents/Name.md</agent_card>
+  <model_id>claude-sonnet-4-20250514</model_id>
+  <mcp_server>https://example.invalid/mcp</mcp_server>
+  <webhook_out>https://example.invalid/webhook</webhook_out>
+  <github_action>workflow-name.yml</github_action>
+  <retry_policy max_attempts=""3"" backoff_seconds=""5"" />
+  <timeout_seconds>300</timeout_seconds>
+  <created_at>ISO8601</created_at>
+  <completed_at />
+</TaskNode>","Single executable unit. Attributes encode routing metadata while child elements carry dependencies, outputs, and operational controls."
+artifact,Skills/a2a-schema.md,"Task Graph Root.artifacts[]",Artifact,"<Artifact artifact_id=""artifact:id"" type=""code"">
+  <path>artifacts/T-001/file.ext</path>
+  <produced_by>T-001</produced_by>
+  <consumed_by>
+    <task_ref>T-002</task_ref>
+  </consumed_by>
+</Artifact>","Portable artifact record for code, docs, config, data, or receipts produced by a task node."
+webhook_envelope,Skills/a2a-schema.md,Webhook Envelope,WebhookEnvelope,"<WebhookEnvelope envelope_version=""1.0"">
+  <task_id>T-001</task_id>
+  <from_agent>AgentName</from_agent>
+  <to_agent>AgentName</to_agent>
+  <llm_hop>claude -&gt; openai</llm_hop>
+  <mcp_route>echo-relay</mcp_route>
+  <payload artifact_id=""artifact:id"">
+    <data type=""string"">string|object</data>
+  </payload>
+  <timestamp>ISO8601</timestamp>
+  <signature />
+</WebhookEnvelope>","Inter-agent handoff envelope. Use this row when wiring webhook dispatch or MCP relay serialization."
+luma_receipt,Skills/a2a-schema.md,Luma Receipt,LumaReceipt,"<LumaReceipt receipt_id=""RCP-001"" task_id=""T-001"" attested_by=""Luma"" status=""pass"">
+  <assertions>
+    <assertion check=""output_exists"" result=""true"" />
+    <assertion check=""schema_valid"" result=""true"" />
+    <assertion check=""webhook_fired"" result=""true"" />
+  </assertions>
+  <timestamp>ISO8601</timestamp>
+  <signature />
+</LumaReceipt>","Completion attestation record. Intended for gating downstream workflow steps on receipt validation."

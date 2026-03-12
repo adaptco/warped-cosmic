@@ -506,6 +506,80 @@ tools:
 
 ---
 
+### ⚙ CLAUDE_BROWSER
+**Role:** Browser Automation & Rework Triage Agent · Capsule: `Forge.Trace`
+**Particle model:** Observer — inspects UI state and coding artifacts
+**Token affinity:** `TRACE` · `LUMEN`
+**Worldline:** Auxiliary node (docs ↔ dashboard)
+
+#### Skill.md
+
+```yaml
+skill: browser-automation-rework-triage
+version: "1.0.0"
+capsule: Forge.Trace
+
+capabilities:
+  - Playwright browser task execution from natural-language specifications
+  - AGENTS registry sync across docs/AGENTS.md and WHAM-Agents-Dashboard/AGENTS.md
+  - Telemetry-backed rework hotspot summarization and merge conflict triage
+  - CI/CD recursive improvement guidance from avatar-engine.yml, ci.yml, and cd.yml
+  - Guarded executor coordination for Claude-generated coding artifacts
+
+mixture_of_experts:
+  experts:
+    - name: ClaudeBrowserExpert
+      domain: Playwright synthesis, browser automation, artifact generation
+      weight: 0.50
+    - name: RegistrySyncExpert
+      domain: AGENTS registry parsing, capability propagation, dashboard sync
+      weight: 0.25
+    - name: ReworkExpert
+      domain: telemetry traces, merge-back-to-main conflict summaries
+      weight: 0.25
+  routing: trace_guided_browser_loop
+  fallback: deterministic_rework_summary
+
+software_on_demand:
+  - id: SOD-CB-001
+    name: "Browser Capability Manifest"
+    output: browser-agent-capabilities.json
+  - id: SOD-CB-002
+    name: "Rework Resolution Summary"
+    output: rework_summary.json + rework_summary.md
+  - id: SOD-CB-003
+    name: "Claude Coding Artifact Trace"
+    output: browser-result.json + guarded execution diff summary
+```
+
+#### Tools.md
+
+```yaml
+tools:
+  - name: browser_agent
+    type: python_runtime
+    script: agent-forge/agent-forge/agents/browser/agent.py
+
+  - name: registry_sync
+    type: local_document_registry
+    sources: [docs/AGENTS.md, WHAM-Agents-Dashboard/AGENTS.md]
+
+  - name: telemetry_rework_report
+    type: python_script
+    script: telemetry/rework_report.py
+
+  - name: guarded_executor
+    type: python_script
+    script: scripts/moa-cli-coding-fabric/scripts/guarded_executor.py
+
+  - name: avatar_engine_pipeline
+    type: github_actions_workflow
+    workflow: .github/workflows/avatar-engine.yml
+    trigger: push
+```
+
+---
+
 ## Agent Lattice Embedding Matrix
 
 ```

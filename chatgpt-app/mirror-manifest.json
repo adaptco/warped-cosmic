@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-03-06T00:56:31.805747+00:00",
+  "source": "C:\\Users\\eqhsp\\Documents\\GitHub\\A2A_MCP\\chatgpt-app",
+  "target": "C:\\Users\\eqhsp\\.codex\\worktrees\\47cf\\projects\\chatgpt-app",
+  "file_count": 7,
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "3b94cbc54274ec0ae730c139d2642f11902c43c81252f52f38a06a59e39b4920",
+      "bytes": 709
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "8815a5ffdacf4f86321a518709093ae63b8dd79854d9ae5b654114f26ae3035b",
+      "bytes": 66742
+    },
+    {
+      "path": "package.json",
+      "sha256": "fea247b93b6ceb809938ef6c89ec8b6254ee5bddbd999464cf0396f23d37f3b1",
+      "bytes": 511
+    },
+    {
+      "path": "public/widget.html",
+      "sha256": "5a7a864250df9f3abdcbb2fd042ec0862432b93d3faeadbbdadb71569f7db892",
+      "bytes": 10255
+    },
+    {
+      "path": "README.md",
+      "sha256": "352da45750fdcc35171d2ebfb220525fa021cf76598065e20de1cf6517a466c4",
+      "bytes": 1296
+    },
+    {
+      "path": "src/server.ts",
+      "sha256": "8b4e71cb8ee896a2614a51bd67789ba765cdac7891936d89e6f87a4805f236b8",
+      "bytes": 15195
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "225318ac86335e9d145f1708efe8108875746dcc32b68c38f7c6761bc4c13c9d",
+      "bytes": 266
+    }
+  ]
+}

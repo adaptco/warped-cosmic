@@ -103,11 +103,39 @@ jobs:
                   docker compose down -v
                   echo "Stack torn down."
 
+    telemetry-review:
+        name: Telemetry Rework Review
+        runs-on: ubuntu-latest
+        needs: integration-test
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.11"
+
+            - name: Ingest JSONL telemetry
+              run: python telemetry/etl.py --root .
+
+            - name: Build KPI snapshot
+              run: python telemetry/kpi_report.py
+
+            - name: Build rework summary
+              run: python telemetry/rework_report.py --repo-root .
+
+            - name: Upload telemetry artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: ci-telemetry-${{ github.run_number }}
+                  path: telemetry/output/
+
     # ── Job 4: Push to GHCR (main only) ─────────────────────────────────
     push-image:
         name: Push to GHCR
         runs-on: ubuntu-latest
-        needs: integration-test
+        needs: [integration-test, telemetry-review]
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         permissions:
             contents: read

@@ -24,7 +24,7 @@ from digital_brain.thread import DigitalThread
 from middleware.wave_runtime import WaveformRuntime
 from physics_search.engine import PhysicsSearchEngine
 from schemas import AgentCapability, CommitPlan
-from server.agent_protocol import AgentProtocol
+from server.agent_protocol import AgentProtocol, default_agent_document_paths
 from server.firestore_sync import FirestoreSync
 from swarm.swarm_runner import SwarmRunner
 
@@ -71,6 +71,7 @@ async def lifespan(app: FastAPI):
     fs_sync = FirestoreSync(project_id="moe-router-98693480")
 
     protocol = AgentProtocol()
+    protocol.sync_from_documents(default_agent_document_paths())
     protocol.handshake(
         "digital_brain",
         capabilities=[

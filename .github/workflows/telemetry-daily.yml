@@ -24,6 +24,9 @@ jobs:
       - name: Build KPI snapshot
         run: python telemetry/kpi_report.py
 
+      - name: Build rework summary
+        run: python telemetry/rework_report.py --repo-root .
+
       - name: Upload telemetry artifacts
         uses: actions/upload-artifact@v4
         with:
