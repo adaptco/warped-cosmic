@@ -18,10 +18,24 @@ on:
                 required: false
                 type: string
                 default: "8100"
+            enable_gemini_cli:
+                required: false
+                type: boolean
+                default: true
+            gemini_cli_version:
+                required: false
+                type: string
+                default: "latest"
+            gemini_artifact_template:
+                required: false
+                type: string
+                default: "schemas/gemini-cli-artifact.template.json"
         secrets:
             MCP_ENDPOINT:
                 required: false
             MCP_TOKEN:
+                required: false
+            GEMINI_API_KEY:
                 required: false
 
 jobs:
@@ -43,6 +57,17 @@ jobs:
 
             - name: Install dependencies
               run: pip install -r requirements.txt
+
+            - name: Set up Node
+              if: ${{ inputs.enable_gemini_cli }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: npm
+
+            - name: Install Gemini CLI
+              if: ${{ inputs.enable_gemini_cli }}
+              run: npm install -g @google/gemini-cli@${{ inputs.gemini_cli_version }}
 
             - name: Validate MCP tool registration
               run: |
@@ -85,3 +110,23 @@ jobs:
                     echo "MCP_ENDPOINT not configured (non-blocking for local dev)"
                   fi
                   echo "MCP runtime contract check passed"
+
+            - name: Validate Gemini CLI wrapper contract
+              if: ${{ inputs.enable_gemini_cli }}
+              env:
+                  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+              run: |
+                  gemini --version
+                  python scripts/validate_gemini_cli_contract.py "${{ inputs.gemini_artifact_template }}"
+                  if [ -n "${GEMINI_API_KEY}" ]; then
+                    echo "GEMINI_API_KEY configured for headless Gemini runs"
+                  else
+                    echo "GEMINI_API_KEY not configured; template validation only"
+                  fi
+
+            - name: Upload Gemini CLI artifact template
+              if: ${{ inputs.enable_gemini_cli }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: gemini-cli-artifact-template
+                  path: ${{ inputs.gemini_artifact_template }}
