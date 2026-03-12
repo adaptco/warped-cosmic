@@ -3,7 +3,6 @@
 import sys
 import os
 from pathlib import Path
-from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -93,62 +92,6 @@ class TestAgentProtocol:
         caps = proto.get_capabilities(hs.agent_id)
         assert len(caps) == 2
         assert caps[0].name == "cap_a"
-
-    def test_sync_from_documents_registers_document_agents(self, tmp_path: Path):
-        registry = tmp_path / "AGENTS.md"
-        registry.write_text(
-            """### CLAUDE_BROWSER
-**Role:** Browser Automation & Rework Triage Agent · Capsule: `Forge.Trace`
-
-#### Skill.md
-
-```yaml
-skill: browser-automation-rework-triage
-version: "1.0.0"
-capsule: Forge.Trace
-
-capabilities:
-  - Playwright browser task execution from natural-language specifications
-  - Telemetry-backed rework hotspot summarization and merge conflict triage
-```
-
-#### Tools.md
-
-```yaml
-tools:
-  - name: browser_agent
-    script: agent-forge/agent-forge/agents/browser/agent.py
-```
-""",
-            encoding="utf-8",
-        )
-
-        proto = AgentProtocol()
-        proto.sync_from_documents([registry])
-
-        agents = proto.list_agents()
-        browser = next(agent for agent in agents if agent["agent_name"] == "CLAUDE_BROWSER")
-        assert browser["kind"] == "document"
-        assert browser["role"] == "Browser Automation & Rework Triage Agent"
-        assert any(source.endswith("AGENTS.md") for source in browser["sources"])
-
-        matches = proto.find_agent_by_capability(
-            "Telemetry-backed rework hotspot summarization and merge conflict triage"
-        )
-        assert browser["agent_id"] in matches
-
-    def test_runtime_product_delivery_schema_embeds_repo_docs(self):
-        proto = AgentProtocol()
-        delivery = proto.runtime_product_delivery_schema()
-
-        assert delivery["schema"] == "AxQxOS/RuntimeProductDelivery/v1"
-        assert delivery["sources"]["agent_registry_path"] == "WHAM-Agents-Dashboard/AGENTS.md"
-        assert delivery["sources"]["skill_registry_path"] == "Skills/SKILL.md"
-        assert delivery["sources"]["environment_contract_path"] == ".codex/environments/environment.toml"
-        assert delivery["sources"]["daily_mlops_workflow_path"] == ".github/workflows/daily-mlops.yml"
-        assert delivery["agent_registry"]["agent_cards"]
-        assert delivery["skill_registry"]["repo_native_tools"]
-        assert delivery["governance_invariants"]
 
     def test_sync_from_documents_registers_document_agents(self, tmp_path: Path):
         registry = tmp_path / "AGENTS.md"

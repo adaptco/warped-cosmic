@@ -7,7 +7,6 @@ and message routing between agents via MCP.
 from __future__ import annotations
 
 import re
-from functools import lru_cache
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
@@ -21,24 +20,12 @@ DEFAULT_AGENT_DOCUMENTS = (
     REPO_ROOT / "docs" / "AGENTS.md",
     REPO_ROOT / "WHAM-Agents-Dashboard" / "AGENTS.md",
 )
-AGENTS_REGISTRY_PATH = REPO_ROOT / "WHAM-Agents-Dashboard" / "AGENTS.md"
-SKILL_REGISTRY_PATH = REPO_ROOT / "Skills" / "SKILL.md"
-ENVIRONMENT_PATH = REPO_ROOT / ".codex" / "environments" / "environment.toml"
-DAILY_MLOPS_WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "daily-mlops.yml"
-CI_WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "ci.yml"
-E2E_API_PATH = REPO_ROOT / "tests" / "e2e_api.py"
 _SECTION_RE = re.compile(r"^###\s+(.+?)\n(.*?)(?=^###\s+|\Z)", re.MULTILINE | re.DOTALL)
 _ROLE_RE = re.compile(r"^\*\*Role:\*\*\s*(.+)$", re.MULTILINE)
 _YAML_BLOCK_RE = re.compile(
     r"####\s+(?P<label>Skill\.md|Tools\.md)\s+```yaml\s*\n(?P<body>.*?)```",
     re.DOTALL,
 )
-
-RUNTIME_AGENT_BINDINGS: Dict[str, str] = {
-    "swarm_orchestrator": "CELINE",
-    "digital_brain": "ECHO",
-    "commit_agent": "DOT",
-}
 
 
 @dataclass
@@ -241,175 +228,6 @@ def get_agent_document_spec(
     return None
 
 
-def _read_text(path: Path) -> str:
-    if not path.exists():
-        return ""
-    return path.read_text(encoding="utf-8")
-
-
-def _repo_path(path: Path) -> str:
-    try:
-        return path.resolve().relative_to(REPO_ROOT).as_posix()
-    except ValueError:
-        return path.resolve().as_posix()
-
-
-def _parse_agent_registry(text: str) -> Dict[str, Any]:
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
-    title = lines[0].lstrip("# ").strip() if lines else ""
-    subtitle = lines[1].lstrip("# ").strip() if len(lines) > 1 and lines[1].startswith("#") else ""
-
-    canonical = ""
-    for line in lines:
-        if line.startswith(">"):
-            canonical = line.lstrip(">").strip().strip("*")
-            break
-
-    embedding_model = ""
-    embedding_match = re.search(r"Computed via:\s*(.+)", text)
-    if embedding_match:
-        embedding_model = embedding_match.group(1).strip()
-
-    card_matches = list(re.finditer(r"^###\s+.*?\b([A-Z][A-Z0-9_-]+)\s*$", text, re.M))
-    cards: List[Dict[str, Any]] = []
-    for index, match in enumerate(card_matches):
-        start = match.start()
-        end = card_matches[index + 1].start() if index + 1 < len(card_matches) else len(text)
-        section = text[start:end]
-
-        role = ""
-        capsule = ""
-        role_match = re.search(r"\*\*Role:\*\*\s*(.*?)\s*·\s*Capsule:\s*`([^`]+)`", section)
-        if role_match:
-            role = role_match.group(1).strip()
-            capsule = role_match.group(2).strip()
-
-        skill_name = ""
-        skill_block_match = re.search(r"#### Skill\.md\s+```yaml\s*(.*?)```", section, re.S)
-        if skill_block_match:
-            skill_match = re.search(r"^\s*skill:\s*([^\n]+)", skill_block_match.group(1), re.M)
-            if skill_match:
-                skill_name = skill_match.group(1).strip().strip('"')
-
-        tool_names: List[str] = []
-        tools_block_match = re.search(r"#### Tools\.md\s+```yaml\s*(.*?)```", section, re.S)
-        if tools_block_match:
-            tool_names = re.findall(
-                r"^\s*-\s*name:\s*([A-Za-z0-9_.-]+)",
-                tools_block_match.group(1),
-                re.M,
-            )
-
-        cards.append(
-            {
-                "name": match.group(1),
-                "role": role,
-                "capsule": capsule,
-                "skill": skill_name,
-                "tools": tool_names,
-            }
-        )
-
-    return {
-        "title": title,
-        "subtitle": subtitle,
-        "canonical": canonical,
-        "embedding_model": embedding_model,
-        "agent_cards": cards,
-    }
-
-
-def _parse_skill_registry(text: str) -> Dict[str, Any]:
-    frontmatter_match = re.search(r"\A---\s*\n(.*?)\n---\s*", text, re.S)
-    frontmatter = frontmatter_match.group(1) if frontmatter_match else ""
-
-    name = ""
-    description_lines: List[str] = []
-    collecting_description = False
-    for raw_line in frontmatter.splitlines():
-        line = raw_line.rstrip()
-        if line.startswith("name:"):
-            name = line.split(":", 1)[1].strip()
-            continue
-        if line.startswith("description:"):
-            collecting_description = True
-            continue
-        if collecting_description:
-            if line.startswith("  "):
-                description_lines.append(line.strip())
-                continue
-            if not line.strip():
-                description_lines.append("")
-                continue
-            collecting_description = False
-    description = " ".join(part for part in description_lines if part).strip()
-
-    repo_native_tools: List[Dict[str, Any]] = []
-    if ENVIRONMENT_PATH.exists():
-        repo_native_tools.append(
-            {
-                "name": "codex-environment-contract",
-                "path": _repo_path(ENVIRONMENT_PATH),
-                "type": "config",
-            }
-        )
-    if DAILY_MLOPS_WORKFLOW_PATH.exists():
-        repo_native_tools.append(
-            {
-                "name": "daily-mlops-workflow",
-                "path": _repo_path(DAILY_MLOPS_WORKFLOW_PATH),
-                "type": "github_actions_workflow",
-            }
-        )
-
-    invariants: List[str] = []
-    governance_match = re.search(
-        r"## Governance Invariants\s*(.*?)(?:\n---|\n## )",
-        text,
-        re.S,
-    )
-    if governance_match:
-        invariants = [
-            line.strip()
-            for line in governance_match.group(1).splitlines()
-            if re.match(r"^\d+\.\s+", line.strip())
-        ]
-
-    return {
-        "name": name,
-        "description": description,
-        "repo_native_tools": repo_native_tools,
-        "governance_invariants": invariants,
-    }
-
-
-@lru_cache(maxsize=1)
-def _runtime_product_delivery_schema() -> Dict[str, Any]:
-    agent_registry = _parse_agent_registry(_read_text(AGENTS_REGISTRY_PATH))
-    skill_registry = _parse_skill_registry(_read_text(SKILL_REGISTRY_PATH))
-    canonical = agent_registry.get("canonical") or "Canonical truth, attested and replayable."
-
-    return {
-        "schema": "AxQxOS/RuntimeProductDelivery/v1",
-        "canonical": canonical,
-        "sources": {
-            "agent_registry_path": _repo_path(AGENTS_REGISTRY_PATH),
-            "skill_registry_path": _repo_path(SKILL_REGISTRY_PATH),
-            "environment_contract_path": _repo_path(ENVIRONMENT_PATH),
-            "daily_mlops_workflow_path": _repo_path(DAILY_MLOPS_WORKFLOW_PATH),
-            "ci_workflow_path": _repo_path(CI_WORKFLOW_PATH),
-            "e2e_contract_path": _repo_path(E2E_API_PATH),
-        },
-        "agent_registry": agent_registry,
-        "skill_registry": {
-            "name": skill_registry["name"],
-            "description": skill_registry["description"],
-            "repo_native_tools": skill_registry["repo_native_tools"],
-        },
-        "governance_invariants": skill_registry["governance_invariants"],
-    }
-
-
 class AgentProtocol:
     """Manages agent-to-agent interactions in the MCP network.
 
@@ -545,11 +363,6 @@ class AgentProtocol:
 
     def list_agents(self) -> List[Dict[str, Any]]:
         """List all registered agents with their capabilities."""
-        delivery_schema = self.runtime_product_delivery_schema()
-        registry_cards = {
-            card["name"]: card
-            for card in delivery_schema.get("agent_registry", {}).get("agent_cards", [])
-        }
         records: List[Dict[str, Any]] = []
         for hs in self._agents.values():
             record: Dict[str, Any] = {
