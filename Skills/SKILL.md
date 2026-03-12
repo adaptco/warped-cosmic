@@ -74,8 +74,10 @@ Generate a `task-graph.a2a.json` anchored to the A2A protocol schema.
 Generate three canonical files that form the **MoA Agent Card surface**:
 
 ### `Agents.md`
+
 One entry per agent role in the system. For each:
-```
+
+```markdown
 ## <AgentName>
 - **Boo Binding**: <Celine|Spryte|Echo|Gloh|Luma|Dot|External>
 - **LLM Target**: <claude|openai|gemini|ollama|any>
@@ -88,8 +90,10 @@ One entry per agent role in the system. For each:
 ```
 
 ### `Tools.md`
+
 One entry per tool (API, function, MCP primitive). For each:
-```
+
+```markdown
 ## <ToolName>
 - **Type**: REST | MCP | CLI | SDK | Webhook
 - **Endpoint / Import**: <value>
@@ -100,8 +104,10 @@ One entry per tool (API, function, MCP primitive). For each:
 ```
 
 ### `Skills.md`
+
 One entry per skill slot in the MoE layer. For each:
-```
+
+```markdown
 ## <SkillName>
 - **Domain**: code-gen | planning | retrieval | evaluation | transform | comms
 - **Model Preference**: <llm_target>
@@ -117,19 +123,20 @@ One entry per skill slot in the MoE layer. For each:
 
 Build the RASIC matrix mapping every task to every agent role.
 
-| Task | Responsible (R) | Accountable (A) | Supportive (S) | Informed (I) | Consulted (C) |
-|------|----------------|-----------------|----------------|--------------|---------------|
-| T-xxx | AgentName / Boo | AgentName / Boo | ... | ... | ... |
+| Task  | Responsible (R) | Accountable (A) | Supportive (S) | Informed (I) | Consulted (C) |
+|-------|-----------------|-----------------|----------------|--------------|---------------|
+| T-xxx | AgentName / Boo | AgentName / Boo | ...            | ...          | ...           |
 
 **Boo Agent Defaults** (override as needed per project):
-| Boo | Default Domain |
-|-----|---------------|
-| Celine | Planning, PRD synthesis, PM-layer decisions |
-| Spryte | Frontend generation, UI/UX artifacts |
-| Echo | Inter-agent messaging, webhook relay, comms |
-| Gloh | Data normalization, RAG vector ops, retrieval |
-| Luma | Evaluation, quality gates, receipt attestation |
-| Dot | CI/CD automation, infra, GitHub Actions runner |
+
+| Boo    | Default Domain                                 |
+|--------|------------------------------------------------|
+| Celine | Planning, PRD synthesis, PM-layer decisions    |
+| Spryte | Frontend generation, UI/UX artifacts           |
+| Echo   | Inter-agent messaging, webhook relay, comms    |
+| Gloh   | Data normalization, RAG vector ops, retrieval  |
+| Luma   | Evaluation, quality gates, receipt attestation |
+| Dot    | CI/CD automation, infra, GitHub Actions runner |
 
 Emit `rasic-matrix.json` alongside the task graph.
 
@@ -140,31 +147,33 @@ Emit `rasic-matrix.json` alongside the task graph.
 Design the webhook mesh that connects agents across LLMs and MCP servers.
 
 ### Topology Rules
+
 1. Every agent that produces an output fires a `webhook_out` to the next task's agent
 2. Echo (Boo) is always the relay broker — all cross-LLM messages route through Echo's MCP endpoint
 3. Webhook payloads wrap A2A task node + output artifact in a signed envelope:
 
-```json
-{
-  "envelope_version": "1.0",
-  "task_id": "T-001",
-  "from_agent": "AgentName",
-  "to_agent": "AgentName",
-  "llm_hop": "claude → openai",
-  "payload": { "artifact_id": "...", "data": "..." },
-  "timestamp": "ISO8601",
-  "signature": "Ed25519 or null"
-}
-```
+   ```json
+   {
+     "envelope_version": "1.0",
+     "task_id": "T-001",
+     "from_agent": "AgentName",
+     "to_agent": "AgentName",
+     "llm_hop": "claude → openai",
+     "payload": { "artifact_id": "...", "data": "..." },
+     "timestamp": "ISO8601",
+     "signature": "Ed25519 or null"
+   }
+   ```
 
 4. Each MCP server is registered in `mcp-registry.json`:
-```json
-{
-  "servers": [
-    { "name": "...", "url": "...", "auth_env": "...", "agents": ["..."] }
-  ]
-}
-```
+
+   ```json
+   {
+     "servers": [
+       { "name": "...", "url": "...", "auth_env": "...", "agents": ["..."] }
+     ]
+   }
+   ```
 
 Emit `webhook-topology.md` (visual DAG as ASCII/Mermaid) and `mcp-registry.json`.
 
@@ -174,7 +183,7 @@ Emit `webhook-topology.md` (visual DAG as ASCII/Mermaid) and `mcp-registry.json`
 
 Generate the full repo structure:
 
-```
+```text
 <project-name>/
 ├── task-graph.a2a.json          # Canonical task DAG
 ├── rasic-matrix.json            # Agent role assignments
@@ -289,7 +298,7 @@ jobs:
 
 After scaffolding, emit a prioritized `IMPLEMENTATION_PLAN.md`:
 
-```
+```markdown
 # Implementation Plan — <Project Name>
 
 ## Sprint 0: Foundation

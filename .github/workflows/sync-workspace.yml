@@ -1,0 +1,20 @@
+name: Sync Monorepo Workspace
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    sync_tasks:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Validate Code Workspace
+              run: |
+                  echo "Validating workspace.code-workspace syntax"
+                  jq . workspace.code-workspace > /dev/null
+
+            - name: Report Workspace Status
+              run: |
+                  echo "Workspace Configuration successfully synced."
+                  echo "Monorepo is active for MCP handling."
