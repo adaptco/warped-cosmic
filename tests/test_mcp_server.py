@@ -182,3 +182,5 @@ class TestMCPServerTools:
         assert "digital_brain" in names
         assert "swarm_orchestrator" in names
         assert "commit_agent" in names
+        digital_brain = next(a for a in agents if a["agent_name"] == "digital_brain")
+        assert digital_brain["runtime_binding"]["boo_binding"] == "ECHO"

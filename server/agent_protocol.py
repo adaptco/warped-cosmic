@@ -357,6 +357,10 @@ class AgentProtocol:
     # Discovery
     # ------------------------------------------------------------------
 
+    def runtime_product_delivery_schema(self) -> Dict[str, Any]:
+        """Return the runtime delivery contract derived from repo docs."""
+        return _runtime_product_delivery_schema()
+
     def list_agents(self) -> List[Dict[str, Any]]:
         """List all registered agents with their capabilities."""
         records: List[Dict[str, Any]] = []
@@ -367,6 +371,7 @@ class AgentProtocol:
                 "capabilities": [c.name for c in hs.capabilities],
                 "model_id": hs.model_id,
                 "version": hs.version,
+                "runtime_binding": self._runtime_binding_for(hs.agent_name, registry_cards),
             }
             metadata = self._agent_metadata.get(hs.agent_id, {})
             for key in ("kind", "role", "capsule", "tools", "sources"):
@@ -398,3 +403,19 @@ class AgentProtocol:
     @property
     def message_count(self) -> int:
         return len(self._messages)
+
+    def _runtime_binding_for(
+        self,
+        agent_name: str,
+        registry_cards: Dict[str, Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        registry_name = RUNTIME_AGENT_BINDINGS.get(agent_name, "")
+        card = registry_cards.get(registry_name, {})
+        return {
+            "boo_binding": registry_name,
+            "registry_agent_card": registry_name,
+            "delivery_role": card.get("role", ""),
+            "capsule": card.get("capsule", ""),
+            "skill": card.get("skill", ""),
+            "delivery_schema": "AxQxOS/RuntimeProductDelivery/v1",
+        }

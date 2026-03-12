@@ -139,7 +139,13 @@ if FastMCP is not None:
     @mcp.tool()
     def agent_list() -> str:
         """List all registered agents in the MCP network."""
-        return json.dumps(protocol.list_agents(), default=str)
+        return json.dumps(
+            {
+                "agents": protocol.list_agents(),
+                "runtime_product_delivery": protocol.runtime_product_delivery_schema(),
+            },
+            default=str,
+        )
 
     @mcp.tool()
     def agent_send(sender: str, receiver: str, action: str, payload: str = "{}") -> str:

@@ -84,8 +84,17 @@ def test_commit_create():
 def test_agents():
     data = _get("/agents")
     assert "agents" in data, f"Missing agents: {data}"
+    assert "runtime_product_delivery" in data, f"Missing runtime schema: {data}"
+
+    delivery = data["runtime_product_delivery"]
+    assert delivery["schema"] == "AxQxOS/RuntimeProductDelivery/v1", delivery
+    assert delivery["sources"]["agent_registry_path"] == "WHAM-Agents-Dashboard/AGENTS.md", delivery
+    assert delivery["sources"]["skill_registry_path"] == "Skills/SKILL.md", delivery
+
     names = [a["agent_name"] for a in data["agents"]]
     assert "digital_brain" in names, f"Missing digital_brain agent: {names}"
+    digital_brain = next(a for a in data["agents"] if a["agent_name"] == "digital_brain")
+    assert digital_brain["runtime_binding"]["boo_binding"] == "ECHO", digital_brain
     print(f"  [PASS] /agents — {len(data['agents'])} agents registered")
 
 
